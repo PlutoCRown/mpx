@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import { parse as parseJson5 } from 'json5'
 import type { SfcBlock } from './types'
 
 export interface ParsedJsonBlock {
@@ -134,7 +135,8 @@ function wrapObjectLiteral (source: string): string {
 
 function parseJsonValue (content: string, filename: string): unknown {
   try {
-    return JSON.parse(content)
+    const parsed: unknown = parseJson5(content)
+    return parsed
   } catch (error) {
     throw wrapError(error, filename)
   }

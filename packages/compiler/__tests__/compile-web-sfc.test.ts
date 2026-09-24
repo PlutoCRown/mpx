@@ -149,6 +149,25 @@ describe('compileMpxFile web SFC', () => {
     })).toThrow(/JSON/)
   })
 
+  it('parses application/json as JSON5, including comments and trailing commas', () => {
+    const compiled = compileMpxFile([
+      '<script type="application/json">',
+      '{',
+      '  // page title',
+      '  "navigationBarTitleText": "Commented",',
+      '  "usingComponents": {',
+      '    "child": "./child",',
+      '  },',
+      '}',
+      '</script>'
+    ].join('\n'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json5.mpx')
+    })
+    expect(compiled.code).toContain('"navigationBarTitleText":"Commented"')
+    expect(compiled.code).toContain('import __mpx_child_0 from "./child.mpx"')
+  })
+
   it('keeps the web script name=json block when a wx one is also present', () => {
     const compiled = compileMpxFile([
       '<script name="json" mode="wx">',
