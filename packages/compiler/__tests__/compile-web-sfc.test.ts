@@ -108,9 +108,9 @@ describe('compileMpxFile web SFC', () => {
 
   it('rejects targets outside this slice', () => {
     expect(() => compileMpxFile('<template></template>', {
-      mode: 'ali' as 'web',
+      mode: 'ios' as 'web',
       resourcePath: 'x.mpx'
-    })).toThrow(/wx assets and web SFC only/)
+    })).toThrow(/mini-program assets and web SFC only/)
     expect(() => compileMpxFile('<template></template>', {
       mode: 'web',
       srcMode: 'ali',

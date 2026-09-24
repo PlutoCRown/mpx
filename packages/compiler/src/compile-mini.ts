@@ -1,41 +1,48 @@
 import * as path from 'path'
 import type { JsonJsContext } from './eval-json-js'
 import { parseJsonBlock, readUsingComponents } from './json-block'
+import { miniProgramAssets } from './modes'
+import type { MiniProgramFiles, MiniProgramMode } from './modes'
 import { applyPlatformRules } from './platform'
 import { matchingStyles, pickBlock } from './select'
 import type { CompileMpxFileResult, ParsedSfc } from './types'
 
-export function compileWxAssets (input: {
+export function compileMiniAssets (input: {
+  mode: MiniProgramMode
   parsed: ParsedSfc
   resourceFile: string
   jsonContext: JsonJsContext
 }): CompileMpxFileResult {
+  const mode = input.mode
   const resourceFile = input.resourceFile
-  const template = pickBlock(input.parsed.templates, 'wx')
-  const script = pickBlock(input.parsed.scripts, 'wx')
-  const jsonBlock = pickBlock(input.parsed.jsons, 'wx')
+  const spec = miniProgramAssets[mode]
+  const template = pickBlock(input.parsed.templates, mode)
+  const script = pickBlock(input.parsed.scripts, mode)
+  const jsonBlock = pickBlock(input.parsed.jsons, mode)
   if (template && typeof template.attrs.src === 'string') {
     throw new Error('[mpx compiler][' + resourceFile + ']: template src is not supported; keep the template inline')
   }
 
   const parsedJson = jsonBlock ? parseJsonBlock(jsonBlock, resourceFile, input.jsonContext) : { json: {}, watchFiles: [] }
-  const mode = 'wx'
   const srcMode = input.jsonContext.srcMode
-  let wxss = ''
-  matchingStyles(input.parsed.styles, 'wx').forEach((style, index) => {
-    if (index > 0) wxss += '\n'
-    wxss += style.content
+  let styleText = ''
+  matchingStyles(input.parsed.styles, mode).forEach((style, index) => {
+    if (index > 0) styleText += '\n'
+    styleText += style.content
   })
   const nextJson = applyPlatformRules(parsedJson.json, { type: 'json', mode, srcMode }) as Record<string, unknown>
+  const templateText = applyPlatformRules(template ? template.content : '', { type: 'template', mode, srcMode }) as string
+  const styleOut = applyPlatformRules(styleText, { type: 'style', mode, srcMode }) as string
+  const files: Record<string, string> = {
+    js: script ? script.content : ''
+  }
+  files[spec.template] = templateText
+  files[spec.style] = styleOut
+  files.json = JSON.stringify(nextJson, null, 2) + '\n'
 
   return {
-    mode: 'wx',
-    files: {
-      js: script ? script.content : '',
-      wxml: applyPlatformRules(template ? template.content : '', { type: 'template', mode, srcMode }) as string,
-      wxss: applyPlatformRules(wxss, { type: 'style', mode, srcMode }) as string,
-      json: JSON.stringify(nextJson, null, 2) + '\n'
-    },
+    mode,
+    files: files as MiniProgramFiles<MiniProgramMode>,
     watchFiles: collectWatchFiles(resourceFile, parsedJson.watchFiles, readUsingComponents(nextJson))
   }
 }
