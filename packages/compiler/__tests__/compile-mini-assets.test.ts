@@ -31,7 +31,7 @@ describe('compileMpxFile mini-program assets', () => {
   })
 
   targets.forEach((target) => {
-    it('passthrough serializes ' + target.mode + ' after applyPlatformRules', () => {
+    it('serializes ' + target.mode + ' after applyPlatformRules', () => {
       const resourcePath = path.join(fixtureDir, 'page.mpx')
       const compiled = compileMpxFile(readFixture('page.mpx'), {
         mode: target.mode,
@@ -47,15 +47,30 @@ describe('compileMpxFile mini-program assets', () => {
       expect(files.js).toContain('createPage({')
       expect(files.js).not.toContain('export default')
       expect(files[target.template]).toContain('class="page"')
-      expect(files[target.template]).toContain('wx:if')
+      // Real platform rules: wx:if → target directive prefix (qa has no wx: rewrite in rule tables)
+      if (target.mode === 'qa') {
+        expect(files[target.template]).toContain('wx:if')
+      } else if (target.mode === 'swan') {
+        expect(files[target.template]).toContain('s-if')
+        expect(files[target.template]).not.toContain('wx:if')
+      } else {
+        const dirPrefix = ({ ali: 'a:', qq: 'qq:', tt: 'tt:', jd: 'jd:', ks: 'ks:', dd: 'dd:' } as Record<string, string>)[target.mode]
+        expect(files[target.template]).toContain(dirPrefix + 'if')
+        expect(files[target.template]).not.toContain('wx:if')
+      }
       expect(files[target.template]).not.toContain('wx-only-template')
       expect(files[target.style]).toContain('.page')
       expect(files[target.style]).not.toContain('.wx-only')
       expect(files[target.style]).not.toContain('.web-only')
-      expect(JSON.parse(files.json)).toEqual({
-        usingComponents: { child: './child' },
-        navigationBarTitleText: 'Hello'
-      })
+      // Page json window rules: navigationBarTitleText → defaultTitle on ali
+      const json = JSON.parse(files.json)
+      expect(json.usingComponents).toEqual({ child: './child' })
+      if (target.mode === 'ali') {
+        expect(json.defaultTitle).toBe('Hello')
+        expect(json.navigationBarTitleText).toBeUndefined()
+      } else {
+        expect(json.navigationBarTitleText).toBe('Hello')
+      }
       expect(compiled.watchFiles).toEqual([
         resourcePath,
         path.join(fixtureDir, 'child.mpx')

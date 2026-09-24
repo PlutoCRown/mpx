@@ -1,0 +1,107 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// @ts-nocheck — extracted rule table; keep shapes loose
+import { isMustache } from '../../../../utils/string'
+
+
+const TAG_NAME = 'camera'
+
+export default function ({ print }) {
+  const ttValueLogError = print({ platform: 'bytedance', tag: TAG_NAME, isError: true, type: 'value' })
+  const ttEventLog = print({ platform: 'bytedance', tag: TAG_NAME, isError: false })
+  const ttPropLog = print({ platform: 'bytedance', tag: TAG_NAME, isError: false })
+  const baiduValueLogError = print({ platform: 'baidu', tag: TAG_NAME, isError: true, type: 'value' })
+  const baiduEventLog = print({ platform: 'baidu', tag: TAG_NAME, isError: false })
+  const qqValueLog = print({ platform: 'qq', tag: TAG_NAME, isError: false, type: 'value' })
+  const qqPropLog = print({ platform: 'qq', tag: TAG_NAME, isError: false })
+  const qqEventLog = print({ platform: 'qq', tag: TAG_NAME, isError: false, type: 'event' })
+  const qaPropLog = print({ platform: 'qa', tag: TAG_NAME, isError: false })
+  const qaEventLog = print({ platform: 'qa', tag: TAG_NAME, isError: false, type: 'event' })
+  const ksPropLog = print({ platform: 'ks', tag: TAG_NAME, isError: false })
+  const ksEventLog = print({ platform: 'ks', tag: TAG_NAME, isError: false, type: 'event' })
+
+  return {
+    test: TAG_NAME,
+    ios (tag, { el }) {
+      el.isBuiltIn = true
+      return 'mpx-camera'
+    },
+    android (tag, { el }) {
+      el.isBuiltIn = true
+      return 'mpx-camera'
+    },
+    harmony (tag, { el }) {
+      el.isBuiltIn = true
+      return 'mpx-camera'
+    },
+    props: [
+      {
+        test: 'mode',
+        swan ({ name, value }) {
+          // 百度只有相机模式，也就是微信的mode=normal
+          if (value !== 'normal') {
+            baiduValueLogError({ name, value })
+          }
+        },
+        tt ({ name, value }) {
+          if (value !== 'normal') {
+            ttValueLogError({ name, value })
+          }
+        },
+        qa: qaPropLog
+      },
+      {
+        test: 'flash',
+        qq ({ name, value }) {
+          const supportList = ['auto', 'on', 'off']
+          if (isMustache(value) || supportList.indexOf(value) === -1) {
+            // 如果是个变量，或者是不支持的属性值，报warning
+            qqValueLog({ name, value })
+          }
+        },
+        tt: ttPropLog
+      },
+      {
+        test: /^(resolution|frame-size)$/,
+        qq: qqPropLog,
+        ks: ksPropLog
+      },
+      {
+        test: /^(frame-size|device-position)$/,
+        qa (prop) {
+          const propsMap = {
+            'device-position': 'deviceposition',
+            'frame-size': 'framesize'
+          }
+          prop.name = propsMap[prop.name]
+          if (prop.name === 'framesize') {
+            const valueMap = {
+              small: 'low',
+              medium: 'medium',
+              large: 'high'
+            }
+            prop.value = valueMap[prop.value]
+          }
+          return prop
+        }
+      }
+    ],
+    event: [
+      {
+        test: /^(scancode)$/,
+        swan: baiduEventLog,
+        tt: ttEventLog,
+        qa: qaEventLog,
+        ks: ksEventLog
+      },
+      {
+        test: /^(initdone)$/,
+        qq: qqEventLog,
+        ks: ksEventLog
+      },
+      {
+        test: /^(stop|error)$/,
+        ks: ksEventLog
+      }
+    ]
+  }
+}

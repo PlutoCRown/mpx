@@ -1,0 +1,5 @@
+export const JSON_JS_EXT = '.json.js'
+export const MPX_ROOT_VIEW = 'mpx-root-view'
+export const MPX_SCROLLBAR_HIDDEN = 'mpx-scrollbar-hidden'
+export const MPX_APP_MODULE_ID = 'mpx-app-scope'
+export const PARENT_MODULE_ID = '__pid'

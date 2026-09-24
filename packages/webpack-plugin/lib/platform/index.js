@@ -1,49 +1,32 @@
-const runRules = require('./run-rules')
-const createDiagnostic = require('./create-diagnostic')
+/**
+ * Thin compatibility shim: delegates to @mpxjs/compiler platform rules
+ * while keeping the existing require-path contract.
+ *
+ * CompilerBridge is set lazily on first call to avoid circular dependency
+ * with template-compiler/compiler.js which also requires this module.
+ */
+const { getRulesRunner, setCompilerBridge } = require('@mpxjs/compiler')
 
-module.exports = function getRulesRunner ({
-  type,
-  mode,
-  srcMode,
-  data,
-  meta,
-  testKey,
-  mainKey,
-  waterfall,
-  warn,
-  error,
-  diagnostic
-}) {
-  const specMap = {
-    template: {
-      wx: require('./template/wx')
-    },
-    style: {
-      wx: require('./style/wx')
-    },
-    json: {
-      wx: require('./json/wx')
-    }
-  }
-  diagnostic = createDiagnostic({
-    type,
-    mode,
-    srcMode,
-    warn,
-    error,
-    diagnostic
+let bridgeInitialized = false
+
+function ensureBridge () {
+  if (bridgeInitialized) return
+  bridgeInitialized = true
+  const {
+    parseMustacheWithContext,
+    stringifyWithResolveComputed,
+    makeAttrsMap,
+    evalExp
+  } = require('../template-compiler/compiler')
+  setCompilerBridge({
+    parseMustacheWithContext,
+    stringifyWithResolveComputed,
+    makeAttrsMap,
+    evalExp
   })
-  const spec = specMap[type] && specMap[type][srcMode] && specMap[type][srcMode]({
-    warn: diagnostic.warn,
-    error: diagnostic.error
-  })
-  if (spec && spec.supportedModes.indexOf(mode) > -1) {
-    const normalizeTest = spec.normalizeTest
-    const mainRules = mainKey ? spec[mainKey] : spec
-    if (mainRules) {
-      return function (input) {
-        return runRules(mainRules, input, { mode, data, meta, testKey, waterfall, normalizeTest, diagnostic })
-      }
-    }
-  }
+}
+
+module.exports = function shimGetRulesRunner (options) {
+  ensureBridge()
+  return getRulesRunner(options)
 }

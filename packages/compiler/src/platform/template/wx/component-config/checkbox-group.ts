@@ -1,0 +1,25 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+// @ts-nocheck — extracted rule table; keep shapes loose
+const TAG_NAME = 'checkbox-group'
+
+export default function () {
+  return {
+    test: TAG_NAME,
+    web (tag, { el }) {
+      el.isBuiltIn = true
+      return 'mpx-checkbox-group'
+    },
+    ios (tag, { el }) {
+      el.isBuiltIn = true
+      return 'mpx-checkbox-group'
+    },
+    android (tag, { el }) {
+      el.isBuiltIn = true
+      return 'mpx-checkbox-group'
+    },
+    harmony (tag, { el }) {
+      el.isBuiltIn = true
+      return 'mpx-checkbox-group'
+    }
+  }
+}
