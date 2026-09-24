@@ -1,0 +1,1 @@
+export { applyPlatformRules } from './platform'

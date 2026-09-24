@@ -2,20 +2,32 @@
   "name": "@mpxjs/compiler",
   "version": "0.0.1",
   "private": true,
-  "description": "Framework-agnostic MPX compiler. mode web emits a Vue SFC string; mini-program modes emit js/template/style/json.",
+  "description": "Framework-agnostic MPX compiler with cross-platform template/style/json rules. mode web emits a Vue SFC string; mini-program modes emit js/template/style/json.",
+  "keywords": ["mpx", "compiler", "cross-platform"],
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "files": [
-    "dist",
-    "fixtures",
-    "README.md"
-  ],
+  "files": ["dist", "fixtures", "README.md"],
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json",
     "test": "jest --config jest.config.json"
   },
-  "engines": {
-    "node": ">=14.14.0"
-  }
+  "dependencies": { "json5": "^2.1.3" },
+  "devDependencies": {
+    "@babel/code-frame": "^7.16.0",
+    "@jridgewell/trace-mapping": "^0.3.25",
+    "@types/node": "^18.19.70",
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {
+    "@babel/code-frame": "^7.16.0",
+    "@jridgewell/trace-mapping": "^0.3.25"
+  },
+  "peerDependenciesMeta": {
+    "@babel/code-frame": { "optional": true },
+    "@jridgewell/trace-mapping": { "optional": true }
+  },
+  "engines": { "node": ">=14.14.0" },
+  "publishConfig": { "registry": "https://registry.npmjs.org", "access": "public" },
+  "repository": { "type": "git", "url": "git@github.com:didi/mpx.git", "directory": "packages/compiler" }
 }

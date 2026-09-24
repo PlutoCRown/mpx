@@ -80,12 +80,12 @@ describe('compileMpxFile wx assets', () => {
     expect(files.wxss).not.toContain('.web')
   })
 
-  it('keeps applyPlatformRules as an identity wrapper', () => {
+  it('returns input unchanged for identity transforms (srcMode === mode)', () => {
     const json = { usingComponents: { child: './child' } }
     const template = '<view wx:if="{{show}}"></view>'
     const style = '.a { color: red }'
     expect(applyPlatformRules(json, { type: 'json', mode: 'wx', srcMode: 'wx' })).toBe(json)
-    expect(applyPlatformRules(template, { type: 'template', mode: 'ali', srcMode: 'wx' })).toBe(template)
+    expect(applyPlatformRules(template, { type: 'template', mode: 'wx', srcMode: 'wx' })).toBe(template)
     expect(applyPlatformRules(style, { type: 'style', mode: 'wx', srcMode: 'wx' })).toBe(style)
   })
 
