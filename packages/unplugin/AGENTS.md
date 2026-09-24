@@ -1,6 +1,6 @@
 # @mpxjs/unplugin
 
-把 `@mpxjs/compiler` 接到打包器。Web 切片：`.mpx` → Vue SFC 字符串 → `rspack-vue-loader`。wx 的四份资产不从这里发，走 `compileMpxFile().files`。
+把 `@mpxjs/compiler` 接到打包器。Web 切片：`.mpx` → Vue SFC 字符串 → `rspack-vue-loader`。小程序离散资产不从这里发，走 `compileMpxFile().files`。
 
 ## 入口
 

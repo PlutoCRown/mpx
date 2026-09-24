@@ -1,6 +1,12 @@
+import type { MiniProgramFiles, MiniProgramMode } from './modes'
+
+export type { MiniProgramFiles, MiniProgramMode }
+
 export type MpxCtorType = 'app' | 'page' | 'component'
 
-export type MpxCompileMode = 'web' | 'wx'
+export type MpxCompileMode = 'web' | MiniProgramMode
+
+export type WxAssetFiles = MiniProgramFiles<'wx'>
 
 export interface CompileMpxFileOptions {
   mode: MpxCompileMode
@@ -12,19 +18,12 @@ export interface CompileMpxFileOptions {
   defs?: Record<string, unknown>
 }
 
-export interface WxAssetFiles {
-  js: string
-  wxml: string
-  wxss: string
-  json: string
-}
-
 export interface CompileMpxFileResult {
   mode: MpxCompileMode
   code?: string
   map?: object
   watchFiles: string[]
-  files?: WxAssetFiles
+  files?: MiniProgramFiles<MiniProgramMode>
 }
 
 export interface HtmlAttr {

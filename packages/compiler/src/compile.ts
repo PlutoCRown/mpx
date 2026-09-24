@@ -1,6 +1,7 @@
 import * as path from 'path'
-import { compileWxAssets } from './compile-wx'
+import { compileMiniAssets } from './compile-mini'
 import { parseJsonBlock, readPageConfig, readUsingComponents } from './json-block'
+import { isMiniProgramMode } from './modes'
 import { parseSfc } from './parse-sfc'
 import { matchingStyles, pickBlock } from './select'
 import { buildScript } from './script'
@@ -9,8 +10,8 @@ import type { CompileMpxFileOptions, CompileMpxFileResult, SfcBlock } from './ty
 
 export function compileMpxFile (source: string, options: CompileMpxFileOptions): CompileMpxFileResult {
   const mode = options.mode
-  if (mode !== 'web' && mode !== 'wx') {
-    throw new Error('[mpx compiler] mode "' + mode + '" is not implemented in this slice (wx assets and web SFC only)')
+  if (mode !== 'web' && !isMiniProgramMode(mode)) {
+    throw new Error('[mpx compiler] mode "' + mode + '" is not implemented in this slice (mini-program assets and web SFC only)')
   }
   const srcMode = options.srcMode || 'wx'
   if (srcMode !== 'wx') {
@@ -24,8 +25,9 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
     env: options.env,
     defs: options.defs
   }
-  if (mode === 'wx') {
-    return compileWxAssets({
+  if (isMiniProgramMode(mode)) {
+    return compileMiniAssets({
+      mode,
       parsed,
       resourceFile,
       jsonContext
