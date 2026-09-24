@@ -7,8 +7,9 @@
 - [src/index.ts](src/index.ts)：导出 `compileMpxFile`
 - [src/compile.ts](src/compile.ts)：模式校验、区块挑选、SFC 组装
 - [src/parse-sfc.ts](src/parse-sfc.ts) / [src/html.ts](src/html.ts)：`.mpx` 区块扫描（script/style 为 raw text）
+- [src/json.ts](src/json.ts)：`application/json` 用 JSON5；`script name="json"` 按 CommonJS 求值
 - [src/template.ts](src/template.ts)：微信模板指令到 Vue 模板
-- [src/script.ts](src/script.ts)：`createPage` / `createComponent` 对象字面量到 Vue `export default`
+- [src/script.ts](src/script.ts)：`createPage` / `createComponent` 对象字面量到 Vue `export default`，并保留 `lang="ts"`
 
 ## 调用链
 
@@ -18,4 +19,4 @@
 
 ## 测试
 
-`fixtures/page.mpx` 与 `fixtures/child.mpx`，用例在 `__tests__/compile-web-sfc.test.ts`。
+`fixtures/page.mpx`、`child.mpx`、`json-pages.mpx`、`json-using.mpx`、`json-using-empty.mpx`、`json-vue-mpx.mpx`、`script-setup-ts.mpx`，用例在 `__tests__/compile-web-sfc.test.ts`。

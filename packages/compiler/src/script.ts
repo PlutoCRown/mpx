@@ -7,6 +7,8 @@ export interface ScriptBuild {
   code: string
   ctorType: MpxCtorType
   watchFiles: string[]
+  lang: string | null
+  setup: boolean
 }
 
 export function buildScript (options: {
@@ -15,7 +17,22 @@ export function buildScript (options: {
   ctorType?: MpxCtorType
   usingComponents: Array<{ name: string, request: string }>
   pageConfig: Record<string, unknown> | null
+  lang?: string
+  setup?: boolean
 }): ScriptBuild {
+  const lang = normalizeScriptLang(options.lang)
+  if (options.setup) {
+    const body = options.script.trim()
+    let code = '/* @mpxjs/compiler mode=web */\n'
+    if (body) code += body + '\n'
+    return {
+      code,
+      ctorType: options.ctorType || 'component',
+      watchFiles: [],
+      lang,
+      setup: true
+    }
+  }
   const found = findCtor(options.script)
   if (found && !found.objectLiteral) {
     throw new Error('[mpx compiler][' + options.resourceFile + ']: ' + found.name + '() argument must be an object literal in this slice')
@@ -28,10 +45,11 @@ export function buildScript (options: {
   const leftover = found
     ? stripCoreCtorImport(options.script.slice(0, found.start) + options.script.slice(found.end)).trim()
     : options.script.trim()
+  const parts = splitLeadingImports(leftover)
 
   const watchFiles: string[] = []
   let code = '/* @mpxjs/compiler mode=web */\n'
-  if (leftover) code += leftover + '\n'
+  if (parts.imports) code += parts.imports + '\n'
   options.usingComponents.forEach((component, index) => {
     const binding = componentBinding(component.name, index)
     const request = toComponentRequest(component.request)
@@ -39,6 +57,7 @@ export function buildScript (options: {
     const watched = resolveWatch(options.resourceFile, request)
     if (watched) watchFiles.push(watched)
   })
+  if (parts.body) code += parts.body + '\n'
   code += 'const __mpxOptions = ' + optionsLiteral + '\n'
   if (options.usingComponents.length) {
     code += '__mpxOptions.components = Object.assign({}, __mpxOptions.components, {\n'
@@ -53,7 +72,89 @@ export function buildScript (options: {
   }
   code += '__mpxOptions.__mpxCtorType = ' + JSON.stringify(ctorType) + '\n'
   code += 'export default __mpxOptions\n'
-  return { code, ctorType, watchFiles }
+  return { code, ctorType, watchFiles, lang, setup: false }
+}
+
+function normalizeScriptLang (lang: string | undefined): string | null {
+  if (!lang) return null
+  const value = lang.toLowerCase()
+  if (value === 'js' || value === 'javascript') return null
+  if (value === 'ts' || value === 'typescript') return 'ts'
+  return lang
+}
+
+function splitLeadingImports (source: string): { imports: string, body: string } {
+  let index = 0
+  let end = 0
+  while (index < source.length) {
+    const cursor = skipSpace(source, index)
+    if (!isImportKeyword(source, cursor)) break
+    end = skipImportStatement(source, cursor)
+    index = end
+  }
+  if (!end) return { imports: '', body: source.trim() }
+  return {
+    imports: source.slice(0, end).trim(),
+    body: source.slice(end).trim()
+  }
+}
+
+function isImportKeyword (input: string, index: number): boolean {
+  if (input.slice(index, index + 6) !== 'import') return false
+  const next = input[index + 6]
+  if (next === '(') return false
+  return !next || !/[\w$]/.test(next)
+}
+
+function skipImportStatement (input: string, index: number): number {
+  let cursor = index + 'import'.length
+  let depth = 0
+  let done = false
+  let seenRequire = false
+  while (cursor < input.length) {
+    const current = input[cursor]
+    if (current === '\'' || current === '"' || current === '`') {
+      cursor = skipString(input, cursor)
+      if (depth === 0) done = true
+      continue
+    }
+    if (current === '/' && input[cursor + 1] === '/') {
+      cursor = skipLine(input, cursor)
+      if (depth === 0 && done) return cursor
+      continue
+    }
+    if (current === '/' && input[cursor + 1] === '*') {
+      const end = input.indexOf('*/', cursor + 2)
+      cursor = end < 0 ? input.length : end + 2
+      continue
+    }
+    if (current === '{' || current === '(' || current === '[') {
+      depth++
+      cursor++
+      continue
+    }
+    if (current === '}' || current === ']') {
+      depth--
+      cursor++
+      continue
+    }
+    if (current === ')') {
+      depth--
+      cursor++
+      if (depth === 0 && seenRequire) done = true
+      continue
+    }
+    if (/[A-Za-z_$]/.test(current)) {
+      const ident = /^[A-Za-z_$][\w$]*/.exec(input.slice(cursor))
+      if (ident && ident[0] === 'require') seenRequire = true
+      cursor += ident ? ident[0].length : 1
+      continue
+    }
+    if (depth === 0 && current === ';' && done) return cursor + 1
+    if (depth === 0 && current === '\n' && done) return cursor
+    cursor++
+  }
+  return cursor
 }
 
 function inferCtorType (name: string): MpxCtorType {
@@ -91,24 +192,108 @@ function findCtor (script: string): CtorHit | null {
     index += ident[0].length
     if (CTORS.indexOf(ident[0]) < 0) continue
     if (start > 0 && /[\w$.]/.test(script[start - 1])) continue
-    const paren = skipSpace(script, index)
-    if (script[paren] !== '(') continue
+    const paren = skipCallParen(script, index)
+    if (paren < 0) continue
     const argStart = skipSpace(script, paren + 1)
     if (script[argStart] !== '{') {
       return { name: ident[0], start, end: paren + 1, objectLiteral: null }
     }
     const objectEnd = skipBalanced(script, argStart, '{', '}')
-    let end = skipSpace(script, objectEnd + 1)
-    if (script[end] === ')') end++
-    end = skipSemicolon(script, end)
+    const call = readCallTail(script, objectEnd)
     return {
       name: ident[0],
       start,
-      end,
-      objectLiteral: script.slice(argStart, objectEnd + 1)
+      end: call.end,
+      objectLiteral: script.slice(argStart, call.exprEnd).trim()
     }
   }
   return null
+}
+
+function skipCallParen (input: string, index: number): number {
+  let cursor = skipSpace(input, index)
+  if (input[cursor] === '<') {
+    const after = skipTypeArgs(input, cursor)
+    if (after === cursor) return -1
+    cursor = skipSpace(input, after)
+  }
+  return input[cursor] === '(' ? cursor : -1
+}
+
+function skipTypeArgs (input: string, index: number): number {
+  if (input[index] !== '<') return index
+  let depth = 0
+  let cursor = index
+  while (cursor < input.length) {
+    const current = input[cursor]
+    if (current === '\'' || current === '"' || current === '`') {
+      cursor = skipString(input, cursor)
+      continue
+    }
+    if (current === '/' && input[cursor + 1] === '/') {
+      cursor = skipLine(input, cursor)
+      continue
+    }
+    if (current === '/' && input[cursor + 1] === '*') {
+      const end = input.indexOf('*/', cursor + 2)
+      cursor = end < 0 ? input.length : end + 2
+      continue
+    }
+    if (current === '<') depth++
+    else if (current === '>') {
+      depth--
+      if (depth === 0) return cursor + 1
+    }
+    cursor++
+  }
+  return index
+}
+
+function readCallTail (input: string, objectEnd: number): { exprEnd: number, end: number } {
+  const afterObject = skipSpace(input, objectEnd + 1)
+  if (isKeyword(input, afterObject, 'as') || isKeyword(input, afterObject, 'satisfies')) {
+    const paren = findCallParen(input, afterObject)
+    if (input[paren] === ')') {
+      return { exprEnd: paren, end: skipSemicolon(input, paren + 1) }
+    }
+  }
+  let end = afterObject
+  if (input[end] === ')') end++
+  return { exprEnd: objectEnd + 1, end: skipSemicolon(input, end) }
+}
+
+function findCallParen (input: string, index: number): number {
+  let depth = 0
+  let cursor = index
+  while (cursor < input.length) {
+    const current = input[cursor]
+    if (current === '\'' || current === '"' || current === '`') {
+      cursor = skipString(input, cursor)
+      continue
+    }
+    if (current === '/' && input[cursor + 1] === '/') {
+      cursor = skipLine(input, cursor)
+      continue
+    }
+    if (current === '/' && input[cursor + 1] === '*') {
+      const end = input.indexOf('*/', cursor + 2)
+      cursor = end < 0 ? input.length : end + 2
+      continue
+    }
+    if (current === '(') depth++
+    else if (current === ')') {
+      if (depth === 0) return cursor
+      depth--
+    }
+    cursor++
+  }
+  return cursor
+}
+
+function isKeyword (input: string, index: number, word: string): boolean {
+  if (input.slice(index, index + word.length) !== word) return false
+  const next = input[index + word.length]
+  return !next || !/[\w$]/.test(next)
 }
 
 function rewriteDataOption (literal: string): string {
@@ -116,6 +301,10 @@ function rewriteDataOption (literal: string): string {
   while (index < literal.length && literal[index] !== '}') {
     if (literal[index] === ',') {
       index = skipSpace(literal, index + 1)
+      continue
+    }
+    if (literal.startsWith('...', index)) {
+      index = skipSpace(literal, skipValue(literal, index + 3))
       continue
     }
     const keyInfo = readKey(literal, index)

@@ -1,0 +1,25 @@
+<template>
+  <view>
+    <cover-swiper></cover-swiper>
+    <poi-rating-modal></poi-rating-modal>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  data: {}
+})
+</script>
+
+<script name="json">
+module.exports = {
+  navigationBarTitleText: 'Detail', // title
+  usingComponents: {
+    'cover-swiper': './components/cover-swiper.mpx', // cover
+    'poi-rating-modal':
+      './components/poi-rating-modal.mpx',
+  },
+}
+</script>

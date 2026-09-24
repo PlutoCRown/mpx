@@ -104,6 +104,213 @@ describe('compileMpxFile web SFC', () => {
     expect(compiled.code).toContain('__mpxCtorType = "page"')
   })
 
+  it('evaluates script name=json as JavaScript, including require and __mpx_mode__', () => {
+    const compiled = compileMpxFile(readFixture('json-module.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-module.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_child_0 from "./child.mpx"')
+    expect(compiled.code).toContain('import __mpx_extra_1 from "./child.mpx"')
+    expect(compiled.code).toContain('child: __mpx_child_0')
+    expect(compiled.code).toContain('extra: __mpx_extra_1')
+    expect(compiled.code).toContain('"navigationBarTitleText":"Otter"')
+    expect(compiled.code).not.toContain('./missing')
+    expect(compiled.watchFiles).toEqual([
+      path.join(fixtureDir, 'json-module.mpx'),
+      path.join(fixtureDir, 'child.mpx'),
+      path.join(fixtureDir, 'using-components.js')
+    ])
+  })
+
+  it('accepts an object literal in script name=json', () => {
+    const compiled = compileMpxFile(readFixture('json-literal.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-literal.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_child_0 from "./child.mpx"')
+    expect(compiled.code).toContain('"navigationBarTitleText":"Literal"')
+  })
+
+  it('still parses pure application/json without evaluating it as script', () => {
+    const compiled = compileMpxFile(readFixture('json-pure.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-pure.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_child_0 from "./child.mpx"')
+    expect(compiled.code).toContain('"navigationBarTitleText":"Pure"')
+    expect(compiled.code).toContain('__mpxCtorType = "component"')
+    expect(() => compileMpxFile([
+      '<script type="application/json">',
+      'module.exports = { navigationBarTitleText: "Nope" }',
+      '</script>'
+    ].join('\n'), {
+      mode: 'web',
+      resourcePath: 'not-json.mpx'
+    })).toThrow(/JSON/)
+  })
+
+  it('parses application/json as JSON5, including comments and trailing commas', () => {
+    const compiled = compileMpxFile([
+      '<script type="application/json">',
+      '{',
+      '  // page title',
+      '  "navigationBarTitleText": "Commented",',
+      '  "usingComponents": {',
+      '    "child": "./child",',
+      '  },',
+      '}',
+      '</script>'
+    ].join('\n'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json5.mpx')
+    })
+    expect(compiled.code).toContain('"navigationBarTitleText":"Commented"')
+    expect(compiled.code).toContain('import __mpx_child_0 from "./child.mpx"')
+  })
+
+  it('keeps the web script name=json block when a wx one is also present', () => {
+    const compiled = compileMpxFile([
+      '<script name="json" mode="wx">',
+      'module.exports = { navigationBarTitleText: "WX" }',
+      '</script>',
+      '<script name="json" mode="web">',
+      'module.exports = { navigationBarTitleText: "WEB" }',
+      '</script>'
+    ].join('\n'), {
+      mode: 'web',
+      resourcePath: 'mode-json.mpx'
+    })
+    expect(compiled.code).toContain('"navigationBarTitleText":"WEB"')
+    expect(compiled.code).not.toContain('"navigationBarTitleText":"WX"')
+  })
+
+  it('emits lang=ts and keeps import type, PropType, and generic constructors', () => {
+    const compiled = compileMpxFile(readFixture('script-ts.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'script-ts.mpx')
+    })
+    const importType = compiled.code.indexOf('import type')
+    const componentImport = compiled.code.indexOf('import __mpx_child_0')
+    const typeItem = compiled.code.indexOf('type Item')
+    expect(compiled.code).toContain('<script lang="ts">')
+    expect(importType).toBeGreaterThanOrEqual(0)
+    expect(componentImport).toBeGreaterThan(importType)
+    expect(typeItem).toBeGreaterThan(componentImport)
+    expect(compiled.code).toContain('PropType<Item[]>')
+    expect(compiled.code).toContain('interface CardProps')
+    expect(compiled.code).toContain('} as CardProps')
+    expect(compiled.code).toContain('data: function () { return {')
+    expect(compiled.code).toContain("title: 'typed'")
+    expect(compiled.code).toContain('...baseOptions')
+    expect(compiled.code).not.toContain('createComponent')
+    expect(compiled.code).toContain('<span>{{ title }}</span>')
+    expect(compiled.code).toContain('lang="less"')
+    expect(compiled.watchFiles).toEqual([
+      path.join(fixtureDir, 'script-ts.mpx'),
+      path.join(fixtureDir, 'child.mpx')
+    ])
+  })
+
+  it('evaluates ut-otter script name=json pages, including comments and trailing commas', () => {
+    const compiled = compileMpxFile(readFixture('json-pages.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-pages.mpx')
+    })
+    expect(compiled.code).toContain('"src":"./pages/index.mpx"')
+    expect(compiled.code).toContain('"path":"/index"')
+    expect(compiled.code).toContain('"src":"./pages/home.mpx"')
+    expect(compiled.code).toContain('"path":"/home"')
+    expect(compiled.code).toContain('"src":"./pages/detail.mpx"')
+    expect(compiled.code).toContain('"path":"/detail"')
+    expect(compiled.code).not.toContain('// home')
+  })
+
+  it('evaluates ut-otter usingComponents with hyphenated names and trailing commas', () => {
+    const compiled = compileMpxFile(readFixture('json-using.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-using.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_cover_swiper_0 from "./components/cover-swiper.mpx"')
+    expect(compiled.code).toContain('import __mpx_poi_rating_modal_1 from "./components/poi-rating-modal.mpx"')
+    expect(compiled.code).toContain('"cover-swiper": __mpx_cover_swiper_0')
+    expect(compiled.code).toContain('"poi-rating-modal": __mpx_poi_rating_modal_1')
+    expect(compiled.code).toContain('"navigationBarTitleText":"Detail"')
+    expect(compiled.code).not.toContain('// cover')
+    expect(compiled.watchFiles).toEqual([
+      path.join(fixtureDir, 'json-using.mpx'),
+      path.join(fixtureDir, 'components/cover-swiper.mpx'),
+      path.join(fixtureDir, 'components/poi-rating-modal.mpx')
+    ])
+  })
+
+  it('evaluates an empty usingComponents object that has a trailing comma', () => {
+    const compiled = compileMpxFile(readFixture('json-using-empty.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-using-empty.mpx')
+    })
+    expect(compiled.code).not.toContain('import __mpx_')
+    expect(compiled.code).toContain('export default __mpxOptions')
+  })
+
+  it('keeps .vue and .mpx requests from script name=json', () => {
+    const compiled = compileMpxFile(readFixture('json-vue-mpx.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-vue-mpx.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_video_player_0 from "../common/video-player.vue"')
+    expect(compiled.code).toContain('import __mpx_cover_image_1 from "../common/cover-image.mpx"')
+    expect(compiled.code).not.toContain('.vue.mpx')
+    expect(compiled.code).not.toContain('.mpx.mpx')
+    expect(compiled.watchFiles).toEqual([
+      path.join(fixtureDir, 'json-vue-mpx.mpx'),
+      path.resolve(fixtureDir, '../common/video-player.vue'),
+      path.resolve(fixtureDir, '../common/cover-image.mpx')
+    ])
+  })
+
+  it('keeps script setup lang=ts, import type, and PropType intact', () => {
+    const compiled = compileMpxFile(readFixture('script-setup-ts.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'script-setup-ts.mpx')
+    })
+    expect(compiled.code).toContain('<script setup lang="ts">')
+    expect(compiled.code).toContain('import type { CollectionItem }')
+    expect(compiled.code).toContain('type CardTrackContext')
+    expect(compiled.code).toContain('PropType')
+    expect(compiled.code).toContain('inject<CardTrackContext | null>')
+    expect(compiled.code).toContain('cardTrackContext?.spec ?? null')
+    expect(compiled.code).toContain('Object as PropType<CollectionItem>')
+    expect(compiled.code).not.toContain('__mpxOptions')
+    expect(compiled.code).not.toContain('export default')
+  })
+
+  it('accepts unquoted lang=ts and lang=typescript', () => {
+    const source = [
+      '<script lang=ts>',
+      'import type { PropType } from "@mpxjs/core"',
+      'createComponent({',
+      '  props: {',
+      '    name: String as PropType<string>',
+      '  }',
+      '})',
+      '</script>'
+    ].join('\n')
+    const compiled = compileMpxFile(source, {
+      mode: 'web',
+      resourcePath: 'lang-ts.mpx'
+    })
+    expect(compiled.code).toContain('<script lang="ts">')
+    expect(compiled.code).toContain('import type { PropType }')
+    expect(compiled.code).toContain('PropType<string>')
+    expect(compiled.code).not.toContain('createComponent')
+
+    const typescript = compileMpxFile(source.replace('lang=ts', 'lang="typescript"'), {
+      mode: 'web',
+      resourcePath: 'lang-typescript.mpx'
+    })
+    expect(typescript.code).toContain('<script lang="ts">')
+  })
+
   it('rejects targets outside this slice', () => {
     expect(() => compileMpxFile('<template></template>', {
       mode: 'wx' as 'web',

@@ -1,0 +1,23 @@
+<template>
+  <view>
+    <video-player></video-player>
+    <cover-image></cover-image>
+  </view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  data: {}
+})
+</script>
+
+<script name="json">
+module.exports = {
+  usingComponents: {
+    'video-player': '../common/video-player.vue',
+    'cover-image': '../common/cover-image.mpx',
+  },
+}
+</script>

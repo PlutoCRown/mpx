@@ -1,0 +1,22 @@
+<template>
+  <view><child></child></view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  data: {
+    ok: true
+  }
+})
+</script>
+
+<script type="application/json">
+{
+  "usingComponents": {
+    "child": "./child"
+  },
+  "navigationBarTitleText": "Pure"
+}
+</script>

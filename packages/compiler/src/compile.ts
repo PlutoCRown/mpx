@@ -1,4 +1,5 @@
 import * as path from 'path'
+import { parseJsonBlock } from './json'
 import { parseSfc } from './parse-sfc'
 import { buildScript } from './script'
 import { transformTemplate } from './template'
@@ -17,15 +18,17 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
   const template = pickBlock(parsed.templates)
   const script = pickBlock(parsed.scripts)
   const jsonBlock = pickBlock(parsed.jsons)
-  const json = jsonBlock ? parseJsonBlock(jsonBlock.content, resourceFile) : {}
-  const usingComponents = readUsingComponents(json)
-  const pageConfig = readPageConfig(json)
+  const parsedJson = parseJsonBlock(jsonBlock, resourceFile, srcMode)
+  const usingComponents = readUsingComponents(parsedJson.json)
+  const pageConfig = readPageConfig(parsedJson.json)
   const built = buildScript({
     script: script ? script.content : '',
     resourceFile,
     ctorType: options.ctorType,
     usingComponents,
-    pageConfig
+    pageConfig,
+    lang: script ? script.lang : undefined,
+    setup: isSetupScript(script)
   })
 
   let code = ''
@@ -35,7 +38,7 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
     }
     code += '<template>' + transformTemplate(template.content) + '</template>\n'
   }
-  code += '<script>\n' + built.code + '</script>\n'
+  code += openScript(built.lang, built.setup) + '\n' + built.code + '</script>\n'
   parsed.styles.forEach((style) => {
     if (!modeMatches(style)) return
     code += '<style' + styleOpenAttrs(style) + '>' + style.content + '</style>\n'
@@ -43,6 +46,9 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
 
   const watchFiles = [resourceFile]
   built.watchFiles.forEach((file) => {
+    if (watchFiles.indexOf(file) < 0) watchFiles.push(file)
+  })
+  parsedJson.watchFiles.forEach((file) => {
     if (watchFiles.indexOf(file) < 0) watchFiles.push(file)
   })
   return { code, watchFiles }
@@ -72,17 +78,17 @@ function pickBlock (blocks: SfcBlock[]): SfcBlock | null {
   return selected
 }
 
-function parseJsonBlock (content: string, resourceFile: string): Record<string, unknown> {
-  try {
-    const parsed: unknown = JSON.parse(content)
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new Error('JSON block must be an object')
-    }
-    return parsed as Record<string, unknown>
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    throw new Error('[mpx compiler][' + resourceFile + ']: ' + message)
-  }
+function isSetupScript (script: SfcBlock | null): boolean {
+  if (!script) return false
+  const setup = script.attrs.setup
+  return setup === true || setup === ''
+}
+
+function openScript (lang: string | null, setup: boolean): string {
+  let tag = '<script'
+  if (setup) tag += ' setup'
+  if (lang) tag += ' lang="' + lang.replace(/"/g, '&quot;') + '"'
+  return tag + '>'
 }
 
 function readUsingComponents (json: Record<string, unknown>): Array<{ name: string, request: string }> {

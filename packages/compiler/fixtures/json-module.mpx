@@ -1,0 +1,30 @@
+<template>
+  <view class="page">
+    <child></child>
+    <extra></extra>
+  </view>
+</template>
+
+<script>
+import { createPage } from '@mpxjs/core'
+
+createPage({
+  data: {
+    ready: true
+  }
+})
+</script>
+
+<script name="json">
+const shared = require('./using-components.js')
+const webOnly = __mpx_mode__ === 'web'
+  ? { extra: './child' }
+  : { extra: './missing' }
+module.exports = {
+  usingComponents: {
+    ...shared,
+    ...webOnly
+  },
+  navigationBarTitleText: __mpx_mode__ === 'web' ? 'Otter' : 'Other'
+}
+</script>

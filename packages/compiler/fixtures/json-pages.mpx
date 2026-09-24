@@ -1,0 +1,30 @@
+<template>
+  <view></view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  data: {}
+})
+</script>
+
+<script name="json">
+module.exports = {
+  pages: [
+    {
+      src: './pages/index.mpx',
+      path: '/index',
+    },
+    {
+      src: './pages/home.mpx', // home
+      path: '/home',
+    },
+    {
+      src: './pages/detail.mpx', // detail
+      path: '/detail',
+    },
+  ],
+}
+</script>

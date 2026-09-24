@@ -1,0 +1,23 @@
+<template>
+  <view><child></child></view>
+</template>
+
+<script>
+import { createPage } from '@mpxjs/core'
+
+createPage({
+  data: {
+    ok: true
+  }
+})
+</script>
+
+<script name="json">
+// object literal, not JSON.parse input
+{
+  usingComponents: {
+    child: './child',
+  },
+  navigationBarTitleText: 'Literal',
+}
+</script>
