@@ -104,6 +104,121 @@ describe('compileMpxFile web SFC', () => {
     expect(compiled.code).toContain('__mpxCtorType = "page"')
   })
 
+  it('evaluates script name=json as JavaScript, including require and __mpx_mode__', () => {
+    const compiled = compileMpxFile(readFixture('json-module.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-module.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_child_0 from "./child.mpx"')
+    expect(compiled.code).toContain('import __mpx_extra_1 from "./child.mpx"')
+    expect(compiled.code).toContain('child: __mpx_child_0')
+    expect(compiled.code).toContain('extra: __mpx_extra_1')
+    expect(compiled.code).toContain('"navigationBarTitleText":"Otter"')
+    expect(compiled.code).not.toContain('./missing')
+    expect(compiled.watchFiles).toEqual([
+      path.join(fixtureDir, 'json-module.mpx'),
+      path.join(fixtureDir, 'child.mpx'),
+      path.join(fixtureDir, 'using-components.js')
+    ])
+  })
+
+  it('accepts an object literal in script name=json', () => {
+    const compiled = compileMpxFile(readFixture('json-literal.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-literal.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_child_0 from "./child.mpx"')
+    expect(compiled.code).toContain('"navigationBarTitleText":"Literal"')
+  })
+
+  it('still parses pure application/json without evaluating it as script', () => {
+    const compiled = compileMpxFile(readFixture('json-pure.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-pure.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_child_0 from "./child.mpx"')
+    expect(compiled.code).toContain('"navigationBarTitleText":"Pure"')
+    expect(compiled.code).toContain('__mpxCtorType = "component"')
+    expect(() => compileMpxFile([
+      '<script type="application/json">',
+      'module.exports = { navigationBarTitleText: "Nope" }',
+      '</script>'
+    ].join('\n'), {
+      mode: 'web',
+      resourcePath: 'not-json.mpx'
+    })).toThrow(/JSON/)
+  })
+
+  it('keeps the web script name=json block when a wx one is also present', () => {
+    const compiled = compileMpxFile([
+      '<script name="json" mode="wx">',
+      'module.exports = { navigationBarTitleText: "WX" }',
+      '</script>',
+      '<script name="json" mode="web">',
+      'module.exports = { navigationBarTitleText: "WEB" }',
+      '</script>'
+    ].join('\n'), {
+      mode: 'web',
+      resourcePath: 'mode-json.mpx'
+    })
+    expect(compiled.code).toContain('"navigationBarTitleText":"WEB"')
+    expect(compiled.code).not.toContain('"navigationBarTitleText":"WX"')
+  })
+
+  it('emits lang=ts and keeps import type, PropType, and generic constructors', () => {
+    const compiled = compileMpxFile(readFixture('script-ts.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'script-ts.mpx')
+    })
+    const importType = compiled.code.indexOf('import type')
+    const componentImport = compiled.code.indexOf('import __mpx_child_0')
+    const typeItem = compiled.code.indexOf('type Item')
+    expect(compiled.code).toContain('<script lang="ts">')
+    expect(importType).toBeGreaterThanOrEqual(0)
+    expect(componentImport).toBeGreaterThan(importType)
+    expect(typeItem).toBeGreaterThan(componentImport)
+    expect(compiled.code).toContain('PropType<Item[]>')
+    expect(compiled.code).toContain('interface CardProps')
+    expect(compiled.code).toContain('} as CardProps')
+    expect(compiled.code).toContain('data: function () { return {')
+    expect(compiled.code).toContain("title: 'typed'")
+    expect(compiled.code).toContain('...baseOptions')
+    expect(compiled.code).not.toContain('createComponent')
+    expect(compiled.code).toContain('<span>{{ title }}</span>')
+    expect(compiled.code).toContain('lang="less"')
+    expect(compiled.watchFiles).toEqual([
+      path.join(fixtureDir, 'script-ts.mpx'),
+      path.join(fixtureDir, 'child.mpx')
+    ])
+  })
+
+  it('accepts unquoted lang=ts and lang=typescript', () => {
+    const source = [
+      '<script lang=ts>',
+      'import type { PropType } from "@mpxjs/core"',
+      'createComponent({',
+      '  props: {',
+      '    name: String as PropType<string>',
+      '  }',
+      '})',
+      '</script>'
+    ].join('\n')
+    const compiled = compileMpxFile(source, {
+      mode: 'web',
+      resourcePath: 'lang-ts.mpx'
+    })
+    expect(compiled.code).toContain('<script lang="ts">')
+    expect(compiled.code).toContain('import type { PropType }')
+    expect(compiled.code).toContain('PropType<string>')
+    expect(compiled.code).not.toContain('createComponent')
+
+    const typescript = compileMpxFile(source.replace('lang=ts', 'lang="typescript"'), {
+      mode: 'web',
+      resourcePath: 'lang-typescript.mpx'
+    })
+    expect(typescript.code).toContain('<script lang="ts">')
+  })
+
   it('rejects targets outside this slice', () => {
     expect(() => compileMpxFile('<template></template>', {
       mode: 'wx' as 'web',

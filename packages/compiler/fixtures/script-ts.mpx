@@ -1,0 +1,48 @@
+<template>
+  <view class="card">
+    <text>{{ title }}</text>
+    <child></child>
+  </view>
+</template>
+
+<script lang="ts">
+import { createComponent } from '@mpxjs/core'
+import type {
+  PropType
+} from '@mpxjs/core'
+
+type Item = {
+  id: string
+  name: string
+}
+
+interface CardProps {
+  items: Item[]
+}
+
+createComponent<CardProps>({
+  props: {
+    items: {
+      type: Array as PropType<Item[]>
+    }
+  },
+  ...baseOptions,
+  data: {
+    title: 'typed'
+  }
+} as CardProps)
+</script>
+
+<script name="json">
+module.exports = {
+  usingComponents: {
+    child: './child'
+  }
+}
+</script>
+
+<style lang="less">
+.card {
+  color: #333;
+}
+</style>
