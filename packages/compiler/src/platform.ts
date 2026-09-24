@@ -1,21 +1,11 @@
-import type { PlatformHooks } from './types'
-
-function identityTemplate (source: string): string {
-  return source
+export function applyPlatformRules (input: unknown, opts: { type: 'template' | 'style' | 'json', mode: string, srcMode: string }): unknown {
+  const runner = getRulesRunner(opts)
+  if (!runner) return input
+  const result = runner(input)
+  return result === undefined ? input : result
 }
 
-function identityStyle (source: string): string {
-  return source
-}
-
-function identityJson (json: Record<string, unknown>): Record<string, unknown> {
-  return json
-}
-
-export function resolvePlatform (hooks?: PlatformHooks): Required<PlatformHooks> {
-  return Object.assign({
-    template: identityTemplate,
-    style: identityStyle,
-    json: identityJson
-  }, hooks)
+// Placeholder for the platform rule runner. Return undefined to keep input unchanged.
+function getRulesRunner (_opts: { type: 'template' | 'style' | 'json', mode: string, srcMode: string }): ((input: unknown) => unknown) | undefined {
+  return undefined
 }

@@ -2,22 +2,6 @@ export type MpxCtorType = 'app' | 'page' | 'component'
 
 export type MpxCompileMode = 'web' | 'wx'
 
-export interface PlatformContext {
-  mode: 'wx'
-  srcMode: 'wx'
-  resourcePath: string
-}
-
-/**
- * Extension point for cross-platform template / style / json rules.
- * This slice applies identity transforms for mode wx. Rule tables stay outside.
- */
-export interface PlatformHooks {
-  template?: (source: string, ctx: PlatformContext) => string
-  style?: (source: string, ctx: PlatformContext) => string
-  json?: (json: Record<string, unknown>, ctx: PlatformContext) => Record<string, unknown>
-}
-
 export interface CompileMpxFileOptions {
   mode: MpxCompileMode
   srcMode?: string
@@ -26,7 +10,6 @@ export interface CompileMpxFileOptions {
   context?: string
   env?: string
   defs?: Record<string, unknown>
-  platform?: PlatformHooks
 }
 
 export interface WxAssetFiles {

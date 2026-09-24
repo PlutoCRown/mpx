@@ -1,6 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
-import { compileMpxFile } from '../src'
+import { applyPlatformRules, compileMpxFile } from '../src'
 
 const fixtureDir = path.join(__dirname, '../fixtures')
 
@@ -80,28 +80,13 @@ describe('compileMpxFile wx assets', () => {
     expect(files.wxss).not.toContain('.web')
   })
 
-  it('applies caller platform hooks and leaves the rules themselves unimplemented', () => {
-    const hooked = compileMpxFile(readFixture('child.mpx'), {
-      mode: 'wx',
-      resourcePath: path.join(fixtureDir, 'child.mpx'),
-      platform: {
-        template (source) {
-          return source + '<!-- blade -->'
-        },
-        style (source) {
-          return source + '/* blade */'
-        },
-        json (json) {
-          return Object.assign({}, json, { fromHook: true })
-        }
-      }
-    })
-    const files = hooked.files
-    if (!files) throw new Error('expected wx files')
-    expect(files.wxml).toContain('<!-- blade -->')
-    expect(files.wxss).toContain('/* blade */')
-    expect(JSON.parse(files.json)).toEqual({ fromHook: true })
-    expect(files.js).toContain('createComponent({')
+  it('keeps applyPlatformRules as an identity wrapper', () => {
+    const json = { usingComponents: { child: './child' } }
+    const template = '<view wx:if="{{show}}"></view>'
+    const style = '.a { color: red }'
+    expect(applyPlatformRules(json, { type: 'json', mode: 'wx', srcMode: 'wx' })).toBe(json)
+    expect(applyPlatformRules(template, { type: 'template', mode: 'ali', srcMode: 'wx' })).toBe(template)
+    expect(applyPlatformRules(style, { type: 'style', mode: 'wx', srcMode: 'wx' })).toBe(style)
   })
 
   it('emits empty assets when the file has no blocks', () => {

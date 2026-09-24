@@ -1,14 +1,13 @@
 import * as path from 'path'
 import type { JsonJsContext } from './eval-json-js'
 import { parseJsonBlock, readUsingComponents } from './json-block'
-import { resolvePlatform } from './platform'
+import { applyPlatformRules } from './platform'
 import { matchingStyles, pickBlock } from './select'
-import type { CompileMpxFileResult, ParsedSfc, PlatformContext, PlatformHooks } from './types'
+import type { CompileMpxFileResult, ParsedSfc } from './types'
 
 export function compileWxAssets (input: {
   parsed: ParsedSfc
   resourceFile: string
-  platform?: PlatformHooks
   jsonContext: JsonJsContext
 }): CompileMpxFileResult {
   const resourceFile = input.resourceFile
@@ -20,26 +19,21 @@ export function compileWxAssets (input: {
   }
 
   const parsedJson = jsonBlock ? parseJsonBlock(jsonBlock, resourceFile, input.jsonContext) : { json: {}, watchFiles: [] }
-  const json = parsedJson.json
-  const platform = resolvePlatform(input.platform)
-  const ctx: PlatformContext = {
-    mode: 'wx',
-    srcMode: 'wx',
-    resourcePath: resourceFile
-  }
+  const mode = 'wx'
+  const srcMode = input.jsonContext.srcMode
   let wxss = ''
   matchingStyles(input.parsed.styles, 'wx').forEach((style, index) => {
     if (index > 0) wxss += '\n'
     wxss += style.content
   })
-  const nextJson = platform.json(json, ctx)
+  const nextJson = applyPlatformRules(parsedJson.json, { type: 'json', mode, srcMode }) as Record<string, unknown>
 
   return {
     mode: 'wx',
     files: {
       js: script ? script.content : '',
-      wxml: platform.template(template ? template.content : '', ctx),
-      wxss: platform.style(wxss, ctx),
+      wxml: applyPlatformRules(template ? template.content : '', { type: 'template', mode, srcMode }) as string,
+      wxss: applyPlatformRules(wxss, { type: 'style', mode, srcMode }) as string,
       json: JSON.stringify(nextJson, null, 2) + '\n'
     },
     watchFiles: collectWatchFiles(resourceFile, parsedJson.watchFiles, readUsingComponents(nextJson))

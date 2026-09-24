@@ -28,7 +28,6 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
     return compileWxAssets({
       parsed,
       resourceFile,
-      platform: options.platform,
       jsonContext
     })
   }

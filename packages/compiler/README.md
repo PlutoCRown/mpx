@@ -27,13 +27,7 @@ const wx = compileMpxFile(source, {
   mode: 'wx',
   srcMode: 'wx',
   resourcePath: '/abs/path/page.mpx',
-  context: '/project',
-  platform: {
-    // 可选。默认恒等。跨端模板/样式/json 规则从这里接入，不在本切片里实现。
-    template: (wxml, ctx) => wxml,
-    style: (wxss, ctx) => wxss,
-    json: (json, ctx) => json
-  }
+  context: '/project'
 })
 
 wx.files.js
@@ -68,7 +62,7 @@ fixture：`fixtures/page.mpx`、`fixtures/child.mpx`。
 - `files.json`：见下方 JSON 区块。没有 json 区块时是 `{}`
 - `watchFiles`：源文件，json 脚本里解析到的相对 `require`，以及 `usingComponents` 里的相对路径（无后缀时补 `.mpx`）
 
-`platform` 在写出 wxml / wxss / json 之前调用，默认什么都不改。页面 `<script>` 不经过这个 hook。
+写出 wxml / wxss / json 之前会调用 `applyPlatformRules(input, { type, mode, srcMode })`。当前没有规则表，输入原样返回。页面 `<script>` 不经过它。
 
 ## JSON 区块
 
