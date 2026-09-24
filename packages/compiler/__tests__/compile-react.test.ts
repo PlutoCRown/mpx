@@ -167,11 +167,11 @@ describe('compileToReact', () => {
     expect(compiled.code).not.toContain('webpack/lib')
   })
 
-  it('rejects targets outside web and react native', () => {
+  it('rejects unsupported srcMode and non-slice targets', () => {
     expect(() => compileMpxFile('<template></template>', {
-      mode: 'wx' as 'web',
+      mode: 'tenon' as 'web',
       resourcePath: 'x.mpx'
-    })).toThrow(/supported: "web", "ios", "android", "harmony"/)
+    })).toThrow(/not implemented/)
     expect(() => compileToReact('<template></template>', {
       mode: 'ios',
       srcMode: 'ali',
