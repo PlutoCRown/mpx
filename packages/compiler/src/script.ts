@@ -8,6 +8,7 @@ export interface ScriptBuild {
   ctorType: MpxCtorType
   watchFiles: string[]
   lang: string | null
+  setup: boolean
 }
 
 export function buildScript (options: {
@@ -17,7 +18,21 @@ export function buildScript (options: {
   usingComponents: Array<{ name: string, request: string }>
   pageConfig: Record<string, unknown> | null
   lang?: string
+  setup?: boolean
 }): ScriptBuild {
+  const lang = normalizeScriptLang(options.lang)
+  if (options.setup) {
+    const body = options.script.trim()
+    let code = '/* @mpxjs/compiler mode=web */\n'
+    if (body) code += body + '\n'
+    return {
+      code,
+      ctorType: options.ctorType || 'component',
+      watchFiles: [],
+      lang,
+      setup: true
+    }
+  }
   const found = findCtor(options.script)
   if (found && !found.objectLiteral) {
     throw new Error('[mpx compiler][' + options.resourceFile + ']: ' + found.name + '() argument must be an object literal in this slice')
@@ -57,7 +72,7 @@ export function buildScript (options: {
   }
   code += '__mpxOptions.__mpxCtorType = ' + JSON.stringify(ctorType) + '\n'
   code += 'export default __mpxOptions\n'
-  return { code, ctorType, watchFiles, lang: normalizeScriptLang(options.lang) }
+  return { code, ctorType, watchFiles, lang, setup: false }
 }
 
 function normalizeScriptLang (lang: string | undefined): string | null {

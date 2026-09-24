@@ -27,7 +27,8 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
     ctorType: options.ctorType,
     usingComponents,
     pageConfig,
-    lang: script ? script.lang : undefined
+    lang: script ? script.lang : undefined,
+    setup: isSetupScript(script)
   })
 
   let code = ''
@@ -37,7 +38,7 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
     }
     code += '<template>' + transformTemplate(template.content) + '</template>\n'
   }
-  code += openScript(built.lang) + '\n' + built.code + '</script>\n'
+  code += openScript(built.lang, built.setup) + '\n' + built.code + '</script>\n'
   parsed.styles.forEach((style) => {
     if (!modeMatches(style)) return
     code += '<style' + styleOpenAttrs(style) + '>' + style.content + '</style>\n'
@@ -77,9 +78,17 @@ function pickBlock (blocks: SfcBlock[]): SfcBlock | null {
   return selected
 }
 
-function openScript (lang: string | null): string {
-  if (!lang) return '<script>'
-  return '<script lang="' + lang.replace(/"/g, '&quot;') + '">'
+function isSetupScript (script: SfcBlock | null): boolean {
+  if (!script) return false
+  const setup = script.attrs.setup
+  return setup === true || setup === ''
+}
+
+function openScript (lang: string | null, setup: boolean): string {
+  let tag = '<script'
+  if (setup) tag += ' setup'
+  if (lang) tag += ' lang="' + lang.replace(/"/g, '&quot;') + '"'
+  return tag + '>'
 }
 
 function readUsingComponents (json: Record<string, unknown>): Array<{ name: string, request: string }> {

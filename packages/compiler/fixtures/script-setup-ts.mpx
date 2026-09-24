@@ -1,0 +1,25 @@
+<template>
+  <view>{{ title }}</view>
+</template>
+
+<script setup lang="ts">
+import {
+  inject,
+  PropType,
+  onMounted,
+} from '@mpxjs/core'
+import {
+  CARD_KEY,
+  type CardTrackContext,
+} from '#/libs/constants/card-track'
+import type { CollectionItem } from '#/libs/types/home'
+
+const cardTrackContext = inject<CardTrackContext | null>(CARD_KEY, null)
+const cardTrackSpec = cardTrackContext?.spec ?? null
+const itemType = Object as PropType<CollectionItem>
+
+onMounted(() => {
+  void cardTrackSpec
+  void itemType
+})
+</script>

@@ -211,6 +211,79 @@ describe('compileMpxFile web SFC', () => {
     ])
   })
 
+  it('evaluates ut-otter script name=json pages, including comments and trailing commas', () => {
+    const compiled = compileMpxFile(readFixture('json-pages.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-pages.mpx')
+    })
+    expect(compiled.code).toContain('"src":"./pages/index.mpx"')
+    expect(compiled.code).toContain('"path":"/index"')
+    expect(compiled.code).toContain('"src":"./pages/home.mpx"')
+    expect(compiled.code).toContain('"path":"/home"')
+    expect(compiled.code).toContain('"src":"./pages/detail.mpx"')
+    expect(compiled.code).toContain('"path":"/detail"')
+    expect(compiled.code).not.toContain('// home')
+  })
+
+  it('evaluates ut-otter usingComponents with hyphenated names and trailing commas', () => {
+    const compiled = compileMpxFile(readFixture('json-using.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-using.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_cover_swiper_0 from "./components/cover-swiper.mpx"')
+    expect(compiled.code).toContain('import __mpx_poi_rating_modal_1 from "./components/poi-rating-modal.mpx"')
+    expect(compiled.code).toContain('"cover-swiper": __mpx_cover_swiper_0')
+    expect(compiled.code).toContain('"poi-rating-modal": __mpx_poi_rating_modal_1')
+    expect(compiled.code).toContain('"navigationBarTitleText":"Detail"')
+    expect(compiled.code).not.toContain('// cover')
+    expect(compiled.watchFiles).toEqual([
+      path.join(fixtureDir, 'json-using.mpx'),
+      path.join(fixtureDir, 'components/cover-swiper.mpx'),
+      path.join(fixtureDir, 'components/poi-rating-modal.mpx')
+    ])
+  })
+
+  it('evaluates an empty usingComponents object that has a trailing comma', () => {
+    const compiled = compileMpxFile(readFixture('json-using-empty.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-using-empty.mpx')
+    })
+    expect(compiled.code).not.toContain('import __mpx_')
+    expect(compiled.code).toContain('export default __mpxOptions')
+  })
+
+  it('keeps .vue and .mpx requests from script name=json', () => {
+    const compiled = compileMpxFile(readFixture('json-vue-mpx.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'json-vue-mpx.mpx')
+    })
+    expect(compiled.code).toContain('import __mpx_video_player_0 from "../common/video-player.vue"')
+    expect(compiled.code).toContain('import __mpx_cover_image_1 from "../common/cover-image.mpx"')
+    expect(compiled.code).not.toContain('.vue.mpx')
+    expect(compiled.code).not.toContain('.mpx.mpx')
+    expect(compiled.watchFiles).toEqual([
+      path.join(fixtureDir, 'json-vue-mpx.mpx'),
+      path.resolve(fixtureDir, '../common/video-player.vue'),
+      path.resolve(fixtureDir, '../common/cover-image.mpx')
+    ])
+  })
+
+  it('keeps script setup lang=ts, import type, and PropType intact', () => {
+    const compiled = compileMpxFile(readFixture('script-setup-ts.mpx'), {
+      mode: 'web',
+      resourcePath: path.join(fixtureDir, 'script-setup-ts.mpx')
+    })
+    expect(compiled.code).toContain('<script setup lang="ts">')
+    expect(compiled.code).toContain('import type { CollectionItem }')
+    expect(compiled.code).toContain('type CardTrackContext')
+    expect(compiled.code).toContain('PropType')
+    expect(compiled.code).toContain('inject<CardTrackContext | null>')
+    expect(compiled.code).toContain('cardTrackContext?.spec ?? null')
+    expect(compiled.code).toContain('Object as PropType<CollectionItem>')
+    expect(compiled.code).not.toContain('__mpxOptions')
+    expect(compiled.code).not.toContain('export default')
+  })
+
   it('accepts unquoted lang=ts and lang=typescript', () => {
     const source = [
       '<script lang=ts>',

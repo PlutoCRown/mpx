@@ -23,7 +23,7 @@ result.watchFiles // 源文件 + JSON usingComponents 解析出的相对路径
 
 ## 这个切片会改写什么
 
-fixture：`fixtures/page.mpx`、`child.mpx`、`json-module.mpx`、`json-literal.mpx`、`json-pure.mpx`、`script-ts.mpx`。
+fixture：`fixtures/page.mpx`、`child.mpx`，以及 ut-otter 形状的 `json-pages.mpx`、`json-using.mpx`、`json-using-empty.mpx`、`json-vue-mpx.mpx`、`script-setup-ts.mpx`。
 
 - 顶层 `<template>` / `<script>` / `<style>` / `<script type="application/json">` / `<script name="json">`
 - `mode="web"` 的区块优先；`mode="wx"` 的 template / style 丢弃
@@ -33,6 +33,7 @@ fixture：`fixtures/page.mpx`、`child.mpx`、`json-module.mpx`、`json-literal.
 - 整段 `{{ }}` 属性绑定
 - `createPage` / `createComponent`（含 `createComponent<Props>()`、参数上的 `as` / `satisfies`）的对象字面量收成 `export default`；对象形式的 `data` 收成函数
 - `<script lang="ts">` / `lang=ts` / `lang="typescript"` 输出为 `<script lang="ts">`，`import type`、`PropType` 等类型语法原样保留给 Vue / Rspack
+- `<script setup lang="ts">` 保持 `setup`，不改写成 `export default`
 - `<script name="json">` 按 JS 求值（`module.exports = { ... }`、对象字面量、相对 `require`）。求值时 `__mpx_mode__` 为 `web`，`__mpx_src_mode__` 为 `srcMode`，`__mpx_env__` 为 `''`
 - `<script type="application/json">` 走 JSON5（与 webpack-plugin 相同，纯 JSON、注释和尾逗号都可以），不会当脚本执行
 - `usingComponents` 收成对 `.mpx` 的 import 和 `components`

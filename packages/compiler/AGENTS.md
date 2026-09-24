@@ -19,4 +19,4 @@
 
 ## 测试
 
-`fixtures/page.mpx`、`child.mpx`、`json-module.mpx`、`json-literal.mpx`、`json-pure.mpx`、`script-ts.mpx`，用例在 `__tests__/compile-web-sfc.test.ts`。
+`fixtures/page.mpx`、`child.mpx`、`json-pages.mpx`、`json-using.mpx`、`json-using-empty.mpx`、`json-vue-mpx.mpx`、`script-setup-ts.mpx`，用例在 `__tests__/compile-web-sfc.test.ts`。
