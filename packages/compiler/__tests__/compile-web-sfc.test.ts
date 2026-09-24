@@ -24,6 +24,8 @@ describe('compileMpxFile web SFC', () => {
     expect(templateAt).toBeGreaterThanOrEqual(0)
     expect(scriptAt).toBeGreaterThan(templateAt)
     expect(styleAt).toBeGreaterThan(scriptAt)
+    expect(result.mode).toBe('web')
+    expect(result.files).toBeUndefined()
     expect(result.code).toContain('/* @mpxjs/compiler mode=web */')
     expect(result.code).not.toContain('processComponentOption')
     expect(result.code).not.toContain('webpack/lib')
@@ -106,9 +108,9 @@ describe('compileMpxFile web SFC', () => {
 
   it('rejects targets outside this slice', () => {
     expect(() => compileMpxFile('<template></template>', {
-      mode: 'wx' as 'web',
+      mode: 'ali' as 'web',
       resourcePath: 'x.mpx'
-    })).toThrow(/only "web"/)
+    })).toThrow(/wx assets and web SFC only/)
     expect(() => compileMpxFile('<template></template>', {
       mode: 'web',
       srcMode: 'ali',

@@ -26,6 +26,9 @@ export function mpxFactory (options?: MpxPluginOptions) {
       result.watchFiles.forEach((file) => {
         this.addWatchFile(file)
       })
+      if (typeof result.code !== 'string') {
+        throw new Error('[mpx] unplugin only emits the Web Vue SFC. wx js/wxml/wxss/json come from compileMpxFile().files')
+      }
       return { code: result.code }
     }
   }

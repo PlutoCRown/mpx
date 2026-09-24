@@ -2,7 +2,7 @@
   "name": "@mpxjs/compiler",
   "version": "0.0.1",
   "private": true,
-  "description": "Framework-agnostic MPX compiler. This slice emits a Vue SFC string for mode web.",
+  "description": "Framework-agnostic MPX compiler. mode web emits a Vue SFC string; mode wx emits js/wxml/wxss/json.",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
