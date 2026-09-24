@@ -1,0 +1,7 @@
+{
+  "transform": {
+    "^.+\\.tsx?$": ["babel-jest", { "rootMode": "upward" }]
+  },
+  "testEnvironment": "node",
+  "testMatch": ["**/__tests__/**/*.test.ts"]
+}

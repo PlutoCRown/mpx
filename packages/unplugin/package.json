@@ -1,0 +1,61 @@
+{
+  "name": "@mpxjs/unplugin",
+  "version": "0.0.1",
+  "private": true,
+  "description": "unplugin adapter that compiles .mpx to a Vue SFC and hands it to the Vue toolchain. Rspack uses unplugin's native rspack driver.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "require": "./dist/index.js",
+      "default": "./dist/index.js"
+    },
+    "./rspack": {
+      "types": "./dist/rspack.d.ts",
+      "require": "./dist/rspack.js",
+      "default": "./dist/rspack.js"
+    }
+  },
+  "files": [
+    "dist",
+    "examples",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.json",
+    "demo:rspack": "rspack build -c examples/web/rspack.config.js"
+  },
+  "engines": {
+    "node": ">=18.12.0"
+  },
+  "dependencies": {
+    "@mpxjs/compiler": "0.0.1",
+    "unplugin": "2.3.11"
+  },
+  "devDependencies": {
+    "@rspack/cli": "1.7.5",
+    "@rspack/core": "1.7.5",
+    "@vue/compiler-sfc": "^3.5.13",
+    "rspack-vue-loader": "17.5.0",
+    "vue": "^3.5.13"
+  },
+  "peerDependencies": {
+    "@rspack/core": "^1.5.0",
+    "rspack-vue-loader": ">=17.2.2",
+    "vue": "^3.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@rspack/core": {
+      "optional": true
+    },
+    "rspack-vue-loader": {
+      "optional": true
+    },
+    "vue": {
+      "optional": true
+    }
+  }
+}
