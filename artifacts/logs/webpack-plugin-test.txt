@@ -1,0 +1,1900 @@
+
+> @mpxjs/webpack-plugin@2.11.1 test
+> jest --passWithNoTests --colors=false --json --outputFile=/tmp/mpx-baseline/webpack-plugin-jest.json
+
+PASS test/platform/wx/style/style-rn.spec.js
+PASS test/platform/common/wx-if.spec.js
+PASS test/platform/common/style-strip-condition.spec.js
+  ● Console
+
+    console.error
+      [Mpx style error]:Error evaluating condition: unknownVar === true ReferenceError: unknownVar is not defined
+          at eval (eval at _construct (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:9:90), <anonymous>:3:1)
+          at apply (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:128:16)
+          at evaluateCondition (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:145:42)
+          at traverse (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:164:10)
+          at traverseAndEvaluate (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:175:10)
+          at doStripCondition (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:249:10)
+          at Object.stripCondition (/workspace/packages/webpack-plugin/test/platform/common/style-strip-condition.spec.js:228:24)
+          at Promise.then.completed (/workspace/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/workspace/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+          at _callCircusTest (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+          at processTicksAndRejections (node:internal/process/task_queues:105:5)
+          at _runTest (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at run (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+          at runAndTransformResultsToJestFormat (/workspace/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+          at jestAdapter (/workspace/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+          at runTestInternal (/workspace/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+          at runTest (/workspace/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+          at Object.worker (/workspace/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)
+
+      128 |     return func(...values)
+      129 |   } catch (e) {
+    > 130 |     console.error(`[Mpx style error]:Error evaluating condition: ${condition}`, e)
+          |             ^
+      131 |     return false
+      132 |   }
+      133 | }
+
+      at error (lib/style-compiler/strip-conditional.js:130:13)
+      at evaluateCondition (lib/style-compiler/strip-conditional.js:145:42)
+      at traverse (lib/style-compiler/strip-conditional.js:164:10)
+      at traverseAndEvaluate (lib/style-compiler/strip-conditional.js:175:10)
+      at doStripCondition (lib/style-compiler/strip-conditional.js:249:10)
+      at Object.stripCondition (test/platform/common/style-strip-condition.spec.js:228:24)
+
+    console.error
+      [Mpx strip conditional error]
+        path: /test/app.mpx
+        message: @mpx conditional directives are only allowed inside <style> blocks in .mpx files
+        stack:
+      Error: @mpx conditional directives are only allowed inside <style> blocks in .mpx files
+          at stripConditionMpx (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:209:27)
+          at stripConditionMpx (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:247:12)
+          at Object.stripCondition (/workspace/packages/webpack-plugin/test/platform/common/style-strip-condition.spec.js:448:22)
+          at Promise.then.completed (/workspace/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/workspace/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+          at _callCircusTest (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+          at _runTest (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at run (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+          at runAndTransformResultsToJestFormat (/workspace/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+          at jestAdapter (/workspace/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+          at runTestInternal (/workspace/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+          at runTest (/workspace/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+          at Object.worker (/workspace/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)
+
+      264 | function logStripError(path, e) {
+      265 |   const msg = `[Mpx strip conditional error]\n  path: ${path}\n  message: ${e && e.message}\n  stack:\n${e && e.stack}`
+    > 266 |   console.error(msg)
+          |           ^
+      267 |   if (__compilation && Array.isArray(__compilation.errors)) {
+      268 |     const err = new Error(msg)
+      269 |     err.file = path
+
+      at error (lib/style-compiler/strip-conditional.js:266:11)
+      at logStripError (lib/style-compiler/strip-conditional.js:209:7)
+      at stripConditionMpx (lib/style-compiler/strip-conditional.js:247:12)
+      at Object.stripCondition (test/platform/common/style-strip-condition.spec.js:448:22)
+
+    console.error
+      [Mpx strip conditional error]
+        path: /test/app.mpx
+        message: @mpx conditional directives are only allowed inside <style> blocks in .mpx files
+        stack:
+      Error: @mpx conditional directives are only allowed inside <style> blocks in .mpx files
+          at stripConditionMpx (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:209:27)
+          at stripConditionMpx (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:247:12)
+          at Object.stripCondition (/workspace/packages/webpack-plugin/test/platform/common/style-strip-condition.spec.js:468:22)
+          at Promise.then.completed (/workspace/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/workspace/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+          at _callCircusTest (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+          at _runTest (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at run (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+          at runAndTransformResultsToJestFormat (/workspace/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+          at jestAdapter (/workspace/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+          at runTestInternal (/workspace/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+          at runTest (/workspace/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+          at Object.worker (/workspace/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)
+
+      264 | function logStripError(path, e) {
+      265 |   const msg = `[Mpx strip conditional error]\n  path: ${path}\n  message: ${e && e.message}\n  stack:\n${e && e.stack}`
+    > 266 |   console.error(msg)
+          |           ^
+      267 |   if (__compilation && Array.isArray(__compilation.errors)) {
+      268 |     const err = new Error(msg)
+      269 |     err.file = path
+
+      at error (lib/style-compiler/strip-conditional.js:266:11)
+      at logStripError (lib/style-compiler/strip-conditional.js:209:7)
+      at stripConditionMpx (lib/style-compiler/strip-conditional.js:247:12)
+      at Object.stripCondition (test/platform/common/style-strip-condition.spec.js:468:22)
+
+    console.error
+      [Mpx strip conditional error]
+        path: /test/app.mpx
+        message: @mpx conditional directives are only allowed inside <style> blocks in .mpx files
+        stack:
+      Error: @mpx conditional directives are only allowed inside <style> blocks in .mpx files
+          at stripConditionMpx (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:225:25)
+          at stripConditionMpx (/workspace/packages/webpack-plugin/lib/style-compiler/strip-conditional.js:247:12)
+          at Object.stripCondition (/workspace/packages/webpack-plugin/test/platform/common/style-strip-condition.spec.js:479:22)
+          at Promise.then.completed (/workspace/node_modules/jest/node_modules/jest-circus/build/utils.js:298:28)
+          at new Promise (<anonymous>)
+          at callAsyncCircusFn (/workspace/node_modules/jest/node_modules/jest-circus/build/utils.js:231:10)
+          at _callCircusTest (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:316:40)
+          at _runTest (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:252:3)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:126:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at _runTestsForDescribeBlock (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:121:9)
+          at run (/workspace/node_modules/jest/node_modules/jest-circus/build/run.js:71:3)
+          at runAndTransformResultsToJestFormat (/workspace/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapterInit.js:122:21)
+          at jestAdapter (/workspace/node_modules/jest/node_modules/jest-circus/build/legacy-code-todo-rewrite/jestAdapter.js:79:19)
+          at runTestInternal (/workspace/node_modules/jest/node_modules/jest-runner/build/runTest.js:367:16)
+          at runTest (/workspace/node_modules/jest/node_modules/jest-runner/build/runTest.js:444:34)
+          at Object.worker (/workspace/node_modules/jest/node_modules/jest-runner/build/testWorker.js:106:12)
+
+      264 | function logStripError(path, e) {
+      265 |   const msg = `[Mpx strip conditional error]\n  path: ${path}\n  message: ${e && e.message}\n  stack:\n${e && e.stack}`
+    > 266 |   console.error(msg)
+          |           ^
+      267 |   if (__compilation && Array.isArray(__compilation.errors)) {
+      268 |     const err = new Error(msg)
+      269 |     err.file = path
+
+      at error (lib/style-compiler/strip-conditional.js:266:11)
+      at logStripError (lib/style-compiler/strip-conditional.js:225:5)
+      at stripConditionMpx (lib/style-compiler/strip-conditional.js:247:12)
+      at Object.stripCondition (test/platform/common/style-strip-condition.spec.js:479:22)
+
+PASS test/integration/require-async.spec.js
+PASS test/global-object.spec.js
+PASS test/runtime/create-template-component.spec.js
+PASS test/template-compiler/rn-process-template.spec.js
+PASS test/platform/common/platform-diagnostic.spec.js
+PASS test/runtime/react-native/mpx-picker.spec.ts
+PASS test/template-compiler/rn-template.spec.js
+PASS test/ali-compat-style.spec.js
+PASS test/template-compiler/web-template.spec.js
+PASS test/platform/wx/template/common.spec.js
+  ● Console
+
+    console.warn
+      <map> does not support [covers] property in ali environment!
+      Target: <map covers="123">
+      Mode: wx -> ali
+      
+        1 |
+      > 2 |     <map covers="123">test</map>
+          |         ^^^^^^^^^^^^^
+        3 |      undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/common.spec.js:20:5)
+
+PASS test/template-compiler/compile-wx-template-fragment.spec.js
+PASS test/resolver-add-mode.spec.js
+PASS test/platform/common/cross-platform-warning.spec.js
+  ● Console
+
+    console.warn
+      Your target mode is "wx", but used "a:class". Did you mean "wx:class"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:19:5)
+
+    console.warn
+      Your target mode is "wx", but used "s-if". Did you mean "wx:if"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:28:5)
+
+    console.warn
+      Your target mode is "ali", but used "qq:for". Did you mean "a:for"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:37:5)
+
+    console.warn
+      Your target mode is "swan", but used "tt:style". Did you mean "s-style"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:46:5)
+
+    console.warn
+      Your target mode is "qq", but used "dd:show". Did you mean "qq:show"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:55:5)
+
+    console.warn
+      Your target mode is "ali", but used "s-if". Did you mean "a:if"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:92:5)
+
+    console.warn
+      Your target mode is "ali", but used "qq:for". Did you mean "a:for"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:92:5)
+
+    console.warn
+      Your target mode is "ali", but used "s-if". Did you mean "a:if"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:109:5)
+
+    console.warn
+      Your target mode is "ali", but used "s-class". Did you mean "a:class"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:109:5)
+
+    console.warn
+      Your target mode is "wx", but used "jd:ref". Did you mean "wx:ref"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:122:5)
+
+    console.warn
+      Your target mode is "tt", but used "qa:key". Did you mean "tt:key"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:131:5)
+
+    console.error
+      React Native mode "android" does not support "a:" prefix. Use "wx:" prefix instead. Found: "a:class"
+
+      3072 |           // React Native 平台：只允许使用 wx: 前缀，其他前缀报错
+      3073 |           if (prefix !== 'wx:') {
+    > 3074 |             error$1(
+           |             ^
+      3075 |               `React Native mode "${mode}" does not support "${prefix}" prefix. ` +
+      3076 |               `Use "wx:" prefix instead. Found: "${attrName}"`
+      3077 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at error$1 (lib/template-compiler/compiler.js:3074:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:141:5)
+
+    console.error
+      React Native mode "ios" does not support "a:" prefix. Use "wx:" prefix instead. Found: "a:class"
+
+      3072 |           // React Native 平台：只允许使用 wx: 前缀，其他前缀报错
+      3073 |           if (prefix !== 'wx:') {
+    > 3074 |             error$1(
+           |             ^
+      3075 |               `React Native mode "${mode}" does not support "${prefix}" prefix. ` +
+      3076 |               `Use "wx:" prefix instead. Found: "${attrName}"`
+      3077 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at error$1 (lib/template-compiler/compiler.js:3074:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:149:5)
+
+    console.error
+      React Native mode "harmony" does not support "a:" prefix. Use "wx:" prefix instead. Found: "a:class"
+
+      3072 |           // React Native 平台：只允许使用 wx: 前缀，其他前缀报错
+      3073 |           if (prefix !== 'wx:') {
+    > 3074 |             error$1(
+           |             ^
+      3075 |               `React Native mode "${mode}" does not support "${prefix}" prefix. ` +
+      3076 |               `Use "wx:" prefix instead. Found: "${attrName}"`
+      3077 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at error$1 (lib/template-compiler/compiler.js:3074:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:157:5)
+
+    console.warn
+      Your target mode is "web", but used "a:class". Did you mean "v-class"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:196:5)
+
+    console.warn
+      Your target mode is "web", but used "s-if". Did you mean "v-if"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:205:5)
+
+    console.warn
+      Your target mode is "wx", but used "v-if". Did you mean "wx:if"?
+
+      3084 |             const suggestedAttr = currentPrefix + suffixPart
+      3085 |
+    > 3086 |             warn$1(
+           |             ^
+      3087 |               `Your target mode is "${mode}", but used "${attrName}". ` +
+      3088 |               `Did you mean "${suggestedAttr}"?`
+      3089 |             )
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:3086:13)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:3065:16)
+      at processCrossPlatformSyntaxWarning (lib/template-compiler/compiler.js:3127:3)
+      at Object.processElement [as start] (lib/template-compiler/compiler.js:760:7)
+      at start (lib/template-compiler/compiler.js:417:15)
+      at handleStartTag (lib/template-compiler/compiler.js:266:11)
+      at _loop (lib/template-compiler/compiler.js:218:14)
+      at Object.parseHTML [as parse] (lib/template-compiler/compiler.js:721:3)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/cross-platform-warning.spec.js:221:5)
+
+PASS test/template-compiler/unocss-scan.spec.js
+PASS test/platform/common/mode.spec.js
+  ● Console
+
+    console.warn
+      <button>'s property 'open-type' does not support '[{{testVal}}]' value in ali environment!
+      Target: <button open-type="{{testVal}}">
+      Mode: wx -> ali
+      
+      > 1 | <button open-type@ali="{{testVal}}" scope@ali="phoneNumber" onGetAuthorize@ali="alipayPhonenumberLogin" onError@ali="onGetPhoneNumberError">手机号授权登录</button>
+          | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/common/mode.spec.js:59:20)
+
+PASS test/platform/common/bind-this.spec.js
+PASS test/platform/wx/json/page.spec.js
+  ● Console
+
+    console.warn
+      Json path <navigationBarTextStyle> is not supported in ali environment!
+      Target: navigationBarTextStyle: "black"
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach [as ali] (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:17:20)
+
+    console.warn
+      Json path <backgroundTextStyle> is not supported in ali environment!
+      Target: backgroundTextStyle: "light"
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach [as ali] (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:17:20)
+
+    console.warn
+      Json path <navigationStyle> is not supported in ali environment!
+      Target: navigationStyle: "invalid"
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/platform/json/wx/index.js:26:20)
+      at Object.ali (lib/platform/json/wx/index.js:280:30)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at compileJson (test/platform/wx/json/page.spec.js:67:12)
+
+    console.warn
+      Json path <navigationStyle> is not supported in ali environment!
+      Target: navigationStyle: null
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/platform/json/wx/index.js:26:20)
+      at Object.ali (lib/platform/json/wx/index.js:280:30)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at compileJson (test/platform/wx/json/page.spec.js:67:12)
+
+    console.warn
+      Json path <navigationBarTextStyle> is not supported in ali environment!
+      Target: navigationBarTextStyle: "black"
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach [as ali] (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:74:12)
+
+    console.warn
+      Json path <backgroundTextStyle> is not supported in ali environment!
+      Target: backgroundTextStyle: "light"
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach [as ali] (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:74:12)
+
+    console.warn
+      Json path <enablePullDownRefresh> is not supported in harmony environment!
+      Target: enablePullDownRefresh: true
+      Mode: wx -> harmony undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:192:20)
+
+    console.warn
+      Json path <onReachBottomDistance> is not supported in harmony environment!
+      Target: onReachBottomDistance: 100
+      Mode: wx -> harmony undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:192:20)
+
+    console.warn
+      Json path <backgroundColorTop> is not supported in harmony environment!
+      Target: backgroundColorTop: "#ffffff"
+      Mode: wx -> harmony undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:192:20)
+
+    console.warn
+      Json path <backgroundColorBottom> is not supported in harmony environment!
+      Target: backgroundColorBottom: "#000000"
+      Mode: wx -> harmony undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:192:20)
+
+    console.warn
+      Json path <backgroundColor> is not supported in harmony environment!
+      Target: backgroundColor: "#eeeeee"
+      Mode: wx -> harmony undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:192:20)
+
+    console.warn
+      Json path <backgroundTextStyle> is not supported in harmony environment!
+      Target: backgroundTextStyle: "light"
+      Mode: wx -> harmony undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:192:20)
+
+    console.warn
+      Json path <pageOrientation> is not supported in harmony environment!
+      Target: pageOrientation: "landscape"
+      Mode: wx -> harmony undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/page.spec.js:192:20)
+
+PASS test/platform/wx/style/process-styles-rn.spec.js
+PASS test/runtime/react-native/transform-shorthand.spec.ts
+PASS test/block-mode-src-mode.spec.js
+PASS test/platform/wx/template/button.spec.js
+  ● Console
+
+    console.warn
+      <button>'s property 'open-type' does not support '[{{ aaa }}]' value in ali environment!
+      Target: <button open-type="{{ aaa }}">
+      Mode: wx -> ali
+      
+      > 1 | <button open-type="{{ aaa }}" bindTap="handleClick"></button>
+          |        ^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/button.spec.js:11:5)
+
+    console.error
+      <button>'s property 'open-type' does not support '[openSetting]' value in ali environment!
+      Target: <button open-type="openSetting">
+      Mode: wx -> ali
+      
+      > 1 | <button open-type="openSetting">打开设置面板</button>
+          |        ^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      853 |   rulesResultMap.forEach((val) => {
+      854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+    > 855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+          |                                                                     ^
+      856 |   })
+      857 |
+      858 |   if (!tagNames.has('component') && !tagNames.has('template') && options.checkUsingComponents) {
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at error$1 (lib/template-compiler/compiler.js:855:69)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:855:53)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/button.spec.js:25:5)
+
+    console.warn
+      <button>'s property 'open-type' does not support '[{{aaa}}]' value in wx environment!
+      Target: <button open-type="{{aaa}}">
+      Mode: wx -> tt
+      
+      > 1 | <button open-type="{{aaa}}">{{name}}</button>
+          |        ^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/button.spec.js:26:21)
+
+    console.warn
+      <button>'s property 'open-type' does not support '[{{aaa}}]' value in bytedance environment!
+      Target: <button open-type="{{aaa}}">
+      Mode: wx -> tt
+      
+      > 1 | <button open-type="{{aaa}}">{{name}}</button>
+          |        ^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/button.spec.js:26:21)
+
+    console.warn
+      <button>'s property 'open-type' does not support '[{{ cardLogin ? 'getUserInfo' : '' }}]' value in wx environment!
+      Target: <button open-type="{{ cardLogin ? 'getUserInfo' : '' }}">
+      Mode: wx -> qq
+      
+      > 1 | <button open-type="{{ cardLogin ? 'getUserInfo' : '' }}" bindgetuserinfo="onGetUserInfo" bindtap="onNextStep">按钮</button>
+          |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/button.spec.js:38:20)
+
+    console.warn
+      <button>'s property 'open-type' does not support '[{{ cardLogin ? 'getUserInfo' : '' }}]' value in qq environment!
+      Target: <button open-type="{{ cardLogin ? 'getUserInfo' : '' }}">
+      Mode: wx -> qq
+      
+      > 1 | <button open-type="{{ cardLogin ? 'getUserInfo' : '' }}" bindgetuserinfo="onGetUserInfo" bindtap="onNextStep">按钮</button>
+          |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/button.spec.js:38:20)
+
+PASS test/template-compiler/custom-built-in-components.spec.js
+PASS test/platform/wx/template/picker.spec.js
+PASS test/platform/wx/template/scroll-view.spec.js
+  ● Console
+
+    console.warn
+      <scroll-view> does not support [show-scrollbar] property in bytedance environment!
+      Target: <scroll-view show-scrollbar="{{false}}">
+      Mode: wx -> tt
+      
+      > 1 | <scroll-view show-scrollbar="{{false}}"></scroll-view>
+          |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/scroll-view.spec.js:66:5)
+
+PASS test/platform/wx/json/component.spec.js
+PASS test/template-compiler/trans-dynamic-class-expr.spec.js
+PASS test/platform/wx/json/app.spec.js
+  ● Console
+
+    console.warn
+      Json path <tabBar.position> is not supported in ali environment!
+      Target: tabBar.position: "top"
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach [as ali] (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at Object.runRules [as ali] (lib/platform/json/wx/index.js:300:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:26:20)
+
+    console.warn
+      Json path <window.navigationBarTextStyle> is not supported in ali environment!
+      Target: window.navigationBarTextStyle: "black"
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach [as ali] (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at Object.runRules [as ali] (lib/platform/json/wx/index.js:313:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:58:20)
+
+    console.warn
+      Json path <window.backgroundTextStyle> is not supported in ali environment!
+      Target: window.backgroundTextStyle: "light"
+      Mode: wx -> ali undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach [as ali] (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at Object.runRules [as ali] (lib/platform/json/wx/index.js:313:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:58:20)
+
+    console.warn
+      Json path <resizable> is not supported in android environment!
+      Target: resizable: true
+      Mode: wx -> android undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:197:20)
+
+    console.error
+      Json path <functionalPages> is not supported in android environment!
+      Target: functionalPages: true
+      Mode: wx -> android undefined
+
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+    > 155 |       error && error(result.message, result.loc)
+          |                ^
+      156 |     },
+      157 |     withContext
+      158 |   }
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at error (lib/platform/create-diagnostic.js:155:16)
+      at error (lib/platform/json/wx/index.js:13:15)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:197:20)
+
+    console.error
+      Json path <plugins> is not supported in android environment!
+      Target: plugins: {"myPlugin":{"version":"1.0.0","provider":"wxid"}}
+      Mode: wx -> android undefined
+
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+    > 155 |       error && error(result.message, result.loc)
+          |                ^
+      156 |     },
+      157 |     withContext
+      158 |   }
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at error (lib/platform/create-diagnostic.js:155:16)
+      at error (lib/platform/json/wx/index.js:13:15)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:197:20)
+
+    console.warn
+      Json path <debug> is not supported in android environment!
+      Target: debug: true
+      Mode: wx -> android undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:197:20)
+
+    console.warn
+      Json path <requiredBackgroundModes> is not supported in android environment!
+      Target: requiredBackgroundModes: ["audio"]
+      Mode: wx -> android undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:197:20)
+
+    console.warn
+      Json path <workers> is not supported in android environment!
+      Target: workers: "workers"
+      Mode: wx -> android undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:197:20)
+
+    console.warn
+      Json path <navigateToMiniProgramAppIdList> is not supported in android environment!
+      Target: navigateToMiniProgramAppIdList: ["wxid"]
+      Mode: wx -> android undefined
+
+      149 |     warn (msg, extra) {
+      150 |       const result = format(msg, extra)
+    > 151 |       warn && warn(result.message, result.loc)
+          |               ^
+      152 |     },
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn (lib/platform/create-diagnostic.js:151:15)
+      at warn (lib/platform/json/wx/index.js:13:45)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:197:20)
+
+    console.error
+      Json path <tabBar> is not supported in android environment!
+      Target: tabBar: {"color":"#000","selectedColor":"#888","backgroundColor":"#fff","list":[{"pagePath":"pages/index","text":"首页"}]}
+      Mode: wx -> android undefined
+
+      153 |     error (msg, extra) {
+      154 |       const result = format(msg, extra)
+    > 155 |       error && error(result.message, result.loc)
+          |                ^
+      156 |     },
+      157 |     withContext
+      158 |   }
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at error (lib/platform/create-diagnostic.js:155:16)
+      at error (lib/platform/json/wx/index.js:13:15)
+      at print (lib/platform/json/wx/index.js:27:11)
+          at Array.forEach (<anonymous>)
+      at Object.forEach (lib/platform/json/wx/index.js:26:20)
+      at call (lib/platform/run-rules.js:31:44)
+      at Object.fn [as withContext] (lib/platform/create-diagnostic.js:106:14)
+      at withContext (lib/platform/run-rules.js:33:22)
+      at _loop (lib/platform/run-rules.js:20:40)
+      at runRules (lib/platform/index.js:45:16)
+      at rulesRunner (test/platform/util.js:53:5)
+      at Object.compileJson (test/platform/wx/json/app.spec.js:197:20)
+
+PASS test/runtime/react-native/mpx-keyboard-avoiding-view.spec.ts
+PASS test/platform/wx/template/event-rn.spec.js
+  ● Console
+
+    console.warn
+      React native environment does not support [catch] event handling for [input] event, it will be converted to [bind]!
+      Target: <input catchinput="handleInput">
+      Mode: wx -> ios
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |       ^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [capture-bind] event handling for [focus] event, it will be converted to [bind]!
+      Target: <input capture-bind:focus="handleFocus">
+      Mode: wx -> ios
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [capture-catch] event handling for [blur] event, it will be converted to [bind]!
+      Target: <input capture-catch:blur="handleBlur">
+      Mode: wx -> ios
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [catch] event handling for [input] event, it will be converted to [bind]!
+      Target: <input catchinput="handleInput">
+      Mode: wx -> android
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |       ^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [capture-bind] event handling for [focus] event, it will be converted to [bind]!
+      Target: <input capture-bind:focus="handleFocus">
+      Mode: wx -> android
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [capture-catch] event handling for [blur] event, it will be converted to [bind]!
+      Target: <input capture-catch:blur="handleBlur">
+      Mode: wx -> android
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [catch] event handling for [input] event, it will be converted to [bind]!
+      Target: <input catchinput="handleInput">
+      Mode: wx -> harmony
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |       ^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [capture-bind] event handling for [focus] event, it will be converted to [bind]!
+      Target: <input capture-bind:focus="handleFocus">
+      Mode: wx -> harmony
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [capture-catch] event handling for [blur] event, it will be converted to [bind]!
+      Target: <input capture-catch:blur="handleBlur">
+      Mode: wx -> harmony
+      
+      > 1 | <input catchinput="handleInput" capture-bind:focus="handleFocus" capture-catch:blur="handleBlur" />
+          |                                                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at compileTemplate (test/platform/wx/template/event-rn.spec.js:19:20)
+
+    console.warn
+      React native environment does not support [catch] event handling for [change] event, it will be converted to [bind]!
+      Target: <switch catchchange="handleChange">
+      Mode: wx -> ios
+      
+      > 1 | <switch catchchange="handleChange" /><slider catchchanging="handleChanging" /><view catchtransitionend="handleTransitionend"></view><movable-view capture-catch:htouchmove="handleHtouchmove"></movable-view>
+          |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/event-rn.spec.js:41:20)
+
+    console.warn
+      React native environment does not support [catch] event handling for [changing] event, it will be converted to [bind]!
+      Target: <slider catchchanging="handleChanging">
+      Mode: wx -> ios
+      
+      > 1 | <switch catchchange="handleChange" /><slider catchchanging="handleChanging" /><view catchtransitionend="handleTransitionend"></view><movable-view capture-catch:htouchmove="handleHtouchmove"></movable-view>
+          |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/event-rn.spec.js:41:20)
+
+    console.warn
+      React native environment does not support [catch] event handling for [transitionend] event, it will be converted to [bind]!
+      Target: <view catchtransitionend="handleTransitionend">
+      Mode: wx -> ios
+      
+      > 1 | <switch catchchange="handleChange" /><slider catchchanging="handleChanging" /><view catchtransitionend="handleTransitionend"></view><movable-view capture-catch:htouchmove="handleHtouchmove"></movable-view>
+          |                                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/event-rn.spec.js:41:20)
+
+    console.warn
+      React native environment does not support [capture-catch] event handling for [htouchmove] event, it will be converted to [bind]!
+      Target: <movable-view capture-catch:htouchmove="handleHtouchmove">
+      Mode: wx -> ios
+      
+      > 1 | <switch catchchange="handleChange" /><slider catchchanging="handleChanging" /><view catchtransitionend="handleTransitionend"></view><movable-view capture-catch:htouchmove="handleHtouchmove"></movable-view>
+          |                                                                                                                                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/event-rn.spec.js:41:20)
+
+PASS test/runtime/react-native/use-transform-style-default.spec.ts
+PASS test/platform/wx/template/wxs.spec.js
+PASS test/util/visitor-merge.spec.js
+  ● Console
+
+    console.log
+      mergeVisitors CallExpression 解决方案: [ 'wx', 'ali' ]
+
+      at Object.log (test/util/visitor-merge.spec.js:209:13)
+
+    console.log
+      mergeVisitors MemberExpression 解决方案: [ 'wxs', 'dd' ]
+
+      at Object.log (test/util/visitor-merge.spec.js:232:13)
+
+PASS test/runtime/react-native/use-transform-style-outline-none.spec.ts
+PASS test/runtime/react-native/hover.spec.ts
+PASS test/platform/wx/template/ad.spec.js
+  ● Console
+
+    console.warn
+      <ad>'s property 'type' does not support '[grid]' value in bytedance environment!
+      Target: <ad type="grid">
+      Mode: wx -> tt
+      
+      > 1 | <ad unit-id="123" ad-intervals="10" ad-type="grid" bindload="handleLoad" binderror="handleError" bindclose="handleClose"></ad>
+          |                                    ^^^^^^^^^^^^^^^ undefined
+
+      852 |
+      853 |   rulesResultMap.forEach((val) => {
+    > 854 |     Array.isArray(val.warnArray) && val.warnArray.forEach(item => warn$1(item.content, item.loc))
+          |                                                                   ^
+      855 |     Array.isArray(val.errorArray) && val.errorArray.forEach(item => error$1(item.content, item.loc))
+      856 |   })
+      857 |
+
+      at ../../node_modules/jest-environment-jsdom/node_modules/jest-mock/build/index.js:397:39
+      at warn$1 (lib/template-compiler/compiler.js:854:67)
+          at Array.forEach (<anonymous>)
+      at forEach (lib/template-compiler/compiler.js:854:51)
+          at Map.forEach (<anonymous>)
+      at Object.forEach [as parse] (lib/template-compiler/compiler.js:853:18)
+      at parse (test/platform/util.js:11:27)
+      at Object.compileTemplate (test/platform/wx/template/ad.spec.js:17:20)
+
+PASS test/platform/wx/template/page-container.spec.js
+PASS test/wxml-loader.spec.js
+PASS test/runtime/react-native/transform-font.spec.ts
+PASS test/web-compat-style.spec.js
+PASS test/runtime/react-native/split-style-props.spec.ts
+PASS test/runtime/react-native/use-transform-style-transform.spec.ts
+PASS test/runtime/react-native/use-transform-style-gap-percent.spec.ts
+PASS test/helpers.spec.js
+PASS test/util/index.spec.js
+PASS test/runtime/i18n.spec.js
+PASS test/runtime/web/util.spec.js
+PASS test/react-process-styles-src-mode.spec.js
+PASS test/runtime/react-native/text-percent-pass-through.spec.ts
+PASS test/runtime/react-native/mpx-view-background-image.spec.ts
+PASS test/runtime/react-native/mpx-view-gradient.spec.ts
+PASS test/runtime/react-native/mpx-image-size.spec.ts
+
+Test Suites: 54 passed, 54 total
+Tests:       553 passed, 553 total
+Snapshots:   0 total
+Time:        3.78 s, estimated 6 s
+Ran all test suites.
+Test results written to: ../../../tmp/mpx-baseline/webpack-plugin-jest.json
+EXIT:0
