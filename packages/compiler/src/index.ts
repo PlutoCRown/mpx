@@ -1,2 +1,9 @@
 export { compileMpxFile } from './compile'
-export type { CompileMpxFileOptions, CompileMpxFileResult, MpxCtorType } from './types'
+export { applyPlatformRules } from './platform'
+export type {
+  CompileMpxFileOptions,
+  CompileMpxFileResult,
+  MpxCompileMode,
+  MpxCtorType,
+  WxAssetFiles
+} from './types'

@@ -2,6 +2,8 @@
 
 `@mpxjs/compiler` 的 unplugin 适配器。`.mpx` 先被编译成 **Vue SFC 字符串**，再交给 Vue 工具链生成 Web JS。编译器本身不产出页面 / 组件的最终 JS。
 
+`mode: 'wx'` 的 js / wxml / wxss / json 只从 `compileMpxFile().files` 读取。本包的 `mpx.rspack()` / `mpx.webpack()` 仍只服务 Web。
+
 Rspack 走 unplugin 的 **`createRspackPlugin`（原生 rspack driver）**，不是把 webpack 适配器套到 Rspack 上。插件在 `apply` 里注册一条普通的 `rspack-vue-loader` 规则和 `VueLoaderPlugin`，不改 `Compilation`、不加 Dependency、不用假 asset 当消息总线，也不 `require('webpack/lib/*')`。
 
 `transformInclude` 只匹配不带 query 的 `.mpx`。`page.mpx?vue&type=script` 这类 Vue 区块请求留给 `rspack-vue-loader`。

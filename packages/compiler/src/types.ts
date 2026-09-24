@@ -1,17 +1,30 @@
 export type MpxCtorType = 'app' | 'page' | 'component'
 
+export type MpxCompileMode = 'web' | 'wx'
+
 export interface CompileMpxFileOptions {
-  mode: 'web'
+  mode: MpxCompileMode
   srcMode?: string
   resourcePath: string
   ctorType?: MpxCtorType
   context?: string
+  env?: string
+  defs?: Record<string, unknown>
+}
+
+export interface WxAssetFiles {
+  js: string
+  wxml: string
+  wxss: string
+  json: string
 }
 
 export interface CompileMpxFileResult {
-  code: string
+  mode: MpxCompileMode
+  code?: string
   map?: object
   watchFiles: string[]
+  files?: WxAssetFiles
 }
 
 export interface HtmlAttr {
