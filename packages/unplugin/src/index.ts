@@ -1,0 +1,5 @@
+export { mpxFactory } from './factory'
+export { isMpxTransformId } from './filter'
+export { rspack } from './rspack'
+export { webpack } from './webpack'
+export type { MpxPluginOptions } from './factory'

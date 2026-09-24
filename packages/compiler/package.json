@@ -1,0 +1,21 @@
+{
+  "name": "@mpxjs/compiler",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Framework-agnostic MPX compiler. This slice emits a Vue SFC string for mode web.",
+  "license": "Apache-2.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "fixtures",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.json",
+    "test": "jest --config jest.config.json"
+  },
+  "engines": {
+    "node": ">=14.14.0"
+  }
+}

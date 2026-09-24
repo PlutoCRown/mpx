@@ -1,0 +1,12 @@
+{
+  "transform": {
+    "^.+\\.tsx?$": ["babel-jest", { "rootMode": "upward" }]
+  },
+  "testEnvironment": "node",
+  "testMatch": ["**/__tests__/**/*.test.ts"],
+  "testPathIgnorePatterns": ["/dist/", "/examples/web/dist/"],
+  "moduleNameMapper": {
+    "^@mpxjs/compiler$": "<rootDir>/../compiler/src/index.ts"
+  },
+  "testTimeout": 120000
+}

@@ -51,6 +51,8 @@
 | --- | --- | --- |
 | `@mpxjs/core` | 运行时核心：响应式、生命周期、跨端 patch、composition API | [packages/core/AGENTS.md](packages/core/AGENTS.md) |
 | `@mpxjs/webpack-plugin` | Webpack 构建插件：`.mpx` SFC 编译、跨端到小程序/Web/RN | [packages/webpack-plugin/AGENTS.md](packages/webpack-plugin/AGENTS.md) |
+| `@mpxjs/compiler` | 与打包器无关的编译核心。当前切片：`mode: 'web'` 产出 Vue SFC 字符串 | [packages/compiler/AGENTS.md](packages/compiler/AGENTS.md) |
+| `@mpxjs/unplugin` | unplugin 适配器。Rspack 原生 driver 把 `.mpx` SFC 交给 Vue loader | [packages/unplugin/AGENTS.md](packages/unplugin/AGENTS.md) |
 | `@mpxjs/api-proxy` | 跨端宿主 API 统一封装与 promisify | [packages/api-proxy/AGENTS.md](packages/api-proxy/AGENTS.md) |
 | `@mpxjs/fetch` | 网络请求封装：拦截器、取消、并发队列、proxy/validator | [packages/fetch/AGENTS.md](packages/fetch/AGENTS.md) |
 | `@mpxjs/pinia` | Pinia 实现，跑在 Mpx 响应式之上 | [packages/pinia/AGENTS.md](packages/pinia/AGENTS.md) |

@@ -1,0 +1,19 @@
+<template>
+  <view class="child">child: {{ label }}</view>
+</template>
+
+<script>
+import { createComponent } from '@mpxjs/core'
+
+createComponent({
+  data: {
+    label: 'nested'
+  }
+})
+</script>
+
+<style>
+.child {
+  color: #06c;
+}
+</style>
