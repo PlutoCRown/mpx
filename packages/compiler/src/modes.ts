@@ -1,3 +1,5 @@
+import { isReact } from './utils/env'
+
 // Asset names mirror webpack-plugin `config[mode].typeExtMap`, without the leading dot.
 // tenon has no typeExtMap. web / ios / android / harmony are not mini-program assets.
 export const miniProgramAssets = {
@@ -23,4 +25,10 @@ export type MiniProgramFiles<M extends MiniProgramMode> = M extends MiniProgramM
 
 export function isMiniProgramMode (mode: string): mode is MiniProgramMode {
   return Object.prototype.hasOwnProperty.call(miniProgramAssets, mode)
+}
+
+export type ReactMode = 'ios' | 'android' | 'harmony'
+
+export function isReactMode (mode: string): mode is ReactMode {
+  return isReact(mode)
 }

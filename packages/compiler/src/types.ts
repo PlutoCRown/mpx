@@ -1,29 +1,58 @@
-import type { MiniProgramFiles, MiniProgramMode } from './modes'
+import type { MiniProgramFiles, MiniProgramMode, ReactMode } from './modes'
 
-export type { MiniProgramFiles, MiniProgramMode }
+export type { MiniProgramFiles, MiniProgramMode, ReactMode }
 
 export type MpxCtorType = 'app' | 'page' | 'component'
-
-export type MpxCompileMode = 'web' | MiniProgramMode
+export type MpxMode = 'web' | MiniProgramMode | ReactMode
+export type MpxCompileMode = MpxMode
 
 export type WxAssetFiles = MiniProgramFiles<'wx'>
 
+export interface RnAsyncChunkConfig {
+  fallback?: string
+  loading?: string
+}
+
+export interface RnConfig {
+  projectName?: string
+  supportSubpackage?: boolean
+  asyncChunk?: RnAsyncChunkConfig
+  customBuiltInComponents?: Record<string, string>
+}
+
 export interface CompileMpxFileOptions {
-  mode: MpxCompileMode
+  mode: MpxMode
   srcMode?: string
   resourcePath: string
   ctorType?: MpxCtorType
   context?: string
+  moduleId?: string
+  isProduction?: boolean
   env?: string
+  /** Compile the app body. The default app compile emits the AppRegistry shell. */
+  isApp?: boolean
+  outputPath?: string
+  rnConfig?: RnConfig
   defs?: Record<string, unknown>
+  externalClasses?: string[]
+  decodeHTMLText?: boolean
+  globalComponents?: Record<string, string>
+  hasApp?: boolean
+  hasUnoCSS?: boolean
+}
+
+export interface CompileToReactOptions extends CompileMpxFileOptions {
+  mode: ReactMode
 }
 
 export interface CompileMpxFileResult {
-  mode: MpxCompileMode
+  mode?: MpxCompileMode
   code?: string
   map?: object
   watchFiles: string[]
   files?: MiniProgramFiles<MiniProgramMode>
+  warnings?: string[]
+  errors?: string[]
 }
 
 export interface HtmlAttr {

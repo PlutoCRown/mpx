@@ -2,7 +2,7 @@
   "name": "@mpxjs/unplugin",
   "version": "0.0.1",
   "private": true,
-  "description": "unplugin adapter that compiles .mpx to a Vue SFC and hands it to the Vue toolchain. Rspack uses unplugin's native rspack driver.",
+  "description": "unplugin adapter for @mpxjs/compiler. Web hands a Vue SFC to the Vue toolchain. ios/android/harmony emit an RN JS module through rspack and webpack transforms.",
   "license": "Apache-2.0",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -26,7 +26,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.json",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --config jest.config.json",
-    "demo:rspack": "rspack build -c examples/web/rspack.config.js"
+    "demo:rspack": "rspack build -c examples/web/rspack.config.js",
+    "demo:rspack:rn": "rspack build -c examples/rn/rspack.config.js"
   },
   "engines": {
     "node": ">=18.12.0"
@@ -40,12 +41,14 @@
     "@rspack/core": "1.7.5",
     "@vue/compiler-sfc": "^3.5.13",
     "rspack-vue-loader": "17.5.0",
-    "vue": "^3.5.13"
+    "vue": "^3.5.13",
+    "webpack": "^5.83.1"
   },
   "peerDependencies": {
     "@rspack/core": "^1.5.0",
     "rspack-vue-loader": ">=17.2.2",
-    "vue": "^3.2.0"
+    "vue": "^3.2.0",
+    "webpack": "^5.83.1"
   },
   "peerDependenciesMeta": {
     "@rspack/core": {
@@ -55,6 +58,9 @@
       "optional": true
     },
     "vue": {
+      "optional": true
+    },
+    "webpack": {
       "optional": true
     }
   }

@@ -108,9 +108,9 @@ describe('compileMpxFile web SFC', () => {
 
   it('rejects targets outside this slice', () => {
     expect(() => compileMpxFile('<template></template>', {
-      mode: 'ios' as 'web',
+      mode: 'tenon' as 'web',
       resourcePath: 'x.mpx'
-    })).toThrow(/mini-program assets and web SFC only/)
+    })).toThrow(/not implemented/)
     expect(() => compileMpxFile('<template></template>', {
       mode: 'web',
       srcMode: 'ali',

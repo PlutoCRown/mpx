@@ -35,11 +35,39 @@ plugins: [
 
 等价入口：`require('@mpxjs/unplugin/rspack').rspack(options)`。
 
-`mpx.rspack()` 会自己挂上 `rspack-vue-loader`（`experimentalInlineMatchResource: true`），并在未设置时打开 `experiments.css`，让 SFC 的 `<style>` 走 Rspack 原生 CSS。不要再注册第二个 `VueLoaderPlugin`。示例配置里同样写了 `experiments.css: true`。
+`mpx.rspack()` 在 `mode: 'web'`（默认）时会自己挂上 `rspack-vue-loader`（`experimentalInlineMatchResource: true`），并在未设置时打开 `experiments.css`，让 SFC 的 `<style>` 走 Rspack 原生 CSS。不要再注册第二个 `VueLoaderPlugin`。示例配置里同样写了 `experiments.css: true`。
+
+## React Native
+
+`mode` 取 `ios`、`android` 或 `harmony` 时，transform 直接产出 RN JS 模块，**不会**注册 `rspack-vue-loader`。页面、组件和异步分包都是普通模块请求，不改 `Compilation`。
+
+```js
+plugins: [
+  mpx.rspack({
+    mode: 'ios',
+    rnConfig: { projectName: 'demo', supportSubpackage: true }
+  })
+]
+```
+
+Rspack demo 不跑真机。它把 fixture 打成 Node bundle，并把 `react`、`react-native`、`@mpxjs/core` 和 RN 内建组件标成 external，用来确认产物里有 render 函数和页面数据。
+
+```sh
+npm run build -w @mpxjs/compiler
+npm run build -w @mpxjs/unplugin
+npm run demo:rspack:rn -w @mpxjs/unplugin
+```
+
+产物在 `packages/unplugin/examples/rn/dist/main.js`。配置是 `examples/rn/rspack.config.js`。`examples/rn/webpack.config.js` 是同一条链路的 webpack 版，测试会实际跑一遍。
+
+宿主如果要接自定义异步 chunk 加载，需要自己提供运行时。官方插件里的 `LoadAsyncChunkRuntimeModule`（替换 webpack `loadScript`）没有移植。
 
 ## webpack
 
-`mpx.webpack(options)` 使用 unplugin 的 webpack driver，同样只把 `.mpx` 变成 Vue SFC 字符串。宿主需要自行把 `vue-loader` 配到 `/\.mpx$/` 上。本切片没有 webpack demo。
+`mpx.webpack(options)` 使用 unplugin 的 webpack driver。
+
+- `mode: 'web'`：只把 `.mpx` 变成 Vue SFC 字符串。宿主需要自行把 `vue-loader` 配到 `/\.mpx$/` 上。本切片没有 webpack Web demo。
+- `mode: 'ios' | 'android' | 'harmony'`：直接把 `.mpx` 变成 RN JS 模块，不需要 `vue-loader`，也不需要改 `Compilation`。示例配置在 `examples/rn/webpack.config.js`。
 
 ## 测试
 
@@ -47,4 +75,4 @@ plugins: [
 npm test -w @mpxjs/unplugin
 ```
 
-包含 transform 过滤，以及用 Rspack 实际打出 web bundle 的用例。
+包含 transform 过滤，以及用 Rspack 打出 web bundle、用 Rspack / webpack 打出 RN bundle 的用例。真机安装没有在这个环境里跑。

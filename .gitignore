@@ -26,6 +26,8 @@ packages/perf/dist/
 packages/compiler/dist/
 packages/unplugin/dist/
 packages/unplugin/examples/web/dist/
+packages/unplugin/examples/rn/dist/
+packages/unplugin/examples/rn/dist-webpack/
 .agent-workflows/
 .agents/skills/skillOpt
 .agents/skills/mpx/
