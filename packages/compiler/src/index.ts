@@ -10,8 +10,9 @@ export type { Rule, Spec, SpecFactory, RulesRunnerOptions, RunRulesOptions, Diag
 export { applyPlatformRules } from './platform'
 
 // Mode helpers
-export { isReact as isReactMode, isWeb, isMiniProgram } from './utils/env'
+export { isReact, isReact as isReactMode, isWeb, isMiniProgram } from './utils/env'
 export { isMiniProgramMode, miniProgramAssets } from './modes'
+export type { ReactMode, MiniProgramMode, MiniProgramFiles } from './modes'
 
 export const supportedModes = [
   'wx', 'ali', 'swan', 'qq', 'tt', 'ks', 'web', 'qa', 'jd', 'dd',
@@ -19,12 +20,15 @@ export const supportedModes = [
 ] as const
 
 export { compileMpxFile } from './compile'
+export { compileToReact } from './react/compile-react'
+export { compileReactTemplate } from './react/template-module'
 export type {
   CompileMpxFileOptions,
   CompileMpxFileResult,
-  MiniProgramFiles,
-  MiniProgramMode,
+  CompileToReactOptions,
   MpxCompileMode,
   MpxCtorType,
+  MpxMode,
+  RnConfig,
   WxAssetFiles
 } from './types'

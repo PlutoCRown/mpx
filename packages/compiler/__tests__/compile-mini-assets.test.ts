@@ -158,12 +158,10 @@ describe('compileMpxFile mini-program assets', () => {
     })).toThrow(/template src is not supported/)
   })
 
-  it('rejects RN and tenon targets', () => {
-    ['ios', 'android', 'harmony', 'tenon'].forEach((mode) => {
-      expect(() => compileMpxFile('<template></template>', {
-        mode: mode as 'web',
-        resourcePath: 'x.mpx'
-      })).toThrow(/not implemented/)
-    })
+  it('rejects tenon (no typeExtMap / no RN path)', () => {
+    expect(() => compileMpxFile('<template></template>', {
+      mode: 'tenon' as 'web',
+      resourcePath: 'x.mpx'
+    })).toThrow(/not implemented/)
   })
 })

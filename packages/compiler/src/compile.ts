@@ -1,17 +1,22 @@
 import * as path from 'path'
 import { compileMiniAssets } from './compile-mini'
 import { parseJsonBlock, readPageConfig, readUsingComponents } from './json-block'
-import { isMiniProgramMode } from './modes'
+import { isMiniProgramMode, isReactMode } from './modes'
 import { parseSfc } from './parse-sfc'
+import { compileToReact } from './react/compile-react'
 import { matchingStyles, pickBlock } from './select'
 import { buildScript } from './script'
 import { transformTemplate } from './template'
-import type { CompileMpxFileOptions, CompileMpxFileResult, SfcBlock } from './types'
+import type { CompileMpxFileOptions, CompileMpxFileResult, CompileToReactOptions, SfcBlock } from './types'
 
 export function compileMpxFile (source: string, options: CompileMpxFileOptions): CompileMpxFileResult {
+  if (isReactMode(options.mode)) {
+    const reactOptions: CompileToReactOptions = Object.assign({}, options, { mode: options.mode })
+    return compileToReact(source, reactOptions)
+  }
   const mode = options.mode
   if (mode !== 'web' && !isMiniProgramMode(mode)) {
-    throw new Error('[mpx compiler] mode "' + mode + '" is not implemented in this slice (mini-program assets and web SFC only)')
+    throw new Error('[mpx compiler] mode "' + mode + '" is not implemented in this slice (mini-program assets, web SFC, and RN modes only)')
   }
   const srcMode = options.srcMode || 'wx'
   if (srcMode !== 'wx') {

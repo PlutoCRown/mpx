@@ -4,8 +4,9 @@
 
 - `mode: 'web'`：页面 / 组件的产物是 **Vue SFC 字符串**（`result.code`）。
 - 小程序 `mode`：产物是四份离散资产（`result.files`：`js`、模板、样式、`json`）。模板和样式的字段名是该平台文件后缀，不带点，与 `@mpxjs/webpack-plugin` 的 `typeExtMap` 一致。
+- `mode: 'ios' | 'android' | 'harmony'`：产物是 **React Native JS 模块**（`result.code`）。
 
-两条路径都不直接生成最终 bundle，也不依赖 webpack / Rspack。
+三条路径都不直接生成最终 bundle，也不依赖 webpack / Rspack。
 
 ## API
 
@@ -62,7 +63,46 @@ ali.files.json
 | `dd` | `ddml` | `ddss` |
 | `ks` | `ksml` | `css` |
 
-`ios` / `android` / `harmony`（RN）以及没有 `typeExtMap` 的 `tenon` 会抛错。Web 仍走 Vue SFC，不进这张表。
+没有 `typeExtMap` 的 `tenon` 会抛错。Web 走 Vue SFC；`ios` / `android` / `harmony` 走 RN 路径，都不进这张表。
+
+## React Native
+
+```ts
+import { compileMpxFile, compileToReact } from '@mpxjs/compiler'
+
+const result = compileToReact(source, {
+  mode: 'ios', // 'android' | 'harmony'
+  srcMode: 'wx',
+  resourcePath: '/abs/path/page.mpx',
+  ctorType: 'page', // 可省略，从 createApp / createPage / createComponent 推断
+  rnConfig: {
+    projectName: 'demo',
+    supportSubpackage: true
+  }
+})
+
+result.code // RN JS 模块
+result.watchFiles
+result.errors // 模板 / 样式 / JSON 诊断；适配器会据此中断 transform
+```
+
+产物与 `@mpxjs/webpack-plugin` 的 react 模式同一类：
+
+- `global.currentInject.render = function (createElement, getComponent) { ... }`
+- 样式收成 `__getClassStyle` / `__getAppClassStyle`，rpx 变成 `_f(n, 'rpx')`
+- `usingComponents` / `pages` / `subPackages` 收成普通 `require()` 或 `import(/* webpackChunkName */)`
+- 用户脚本内联在 `currentInject` 赋值之后，最后 `export default global.__mpxOptionsMap[moduleId]`
+- `createApp` 文件默认先输出 `AppRegistry` 外壳；`isApp: true`（或请求带 `mpxRnApp`）才编译 app 本体
+
+JSON 直接调用本包的 `getRulesRunner` / `applyPlatformRules` 共享规则表，不在 `src/react` 再抄一份。`compileReactTemplate` 对应 webpack-plugin 的 `react/template-loader`，给 `<import src>` 的模板文件用。
+
+这个切片没有做、也不通过改 `Compilation` 补上的部分：
+
+- `LoadAsyncChunkRuntimeModule`、`RetryRuntimeModule`、`@refresh reset`、`__mpxPageConfigsMap` 注入、异步 chunk 缓存清理
+- presentational dependency、动态 entry、`importModule` 样式子请求
+- wxs loader、i18n.wxs、`<script setup>`、非 js 的 script lang、外链 template
+- UnoCSS class map 的占位符替换（`hasUnoCSS: true` 只输出同样的占位函数）
+- 真机 / Metro 整包构建
 
 ## Web 会改写什么
 
@@ -87,7 +127,7 @@ fixture：`fixtures/page.mpx`、`fixtures/child.mpx`。
 - `files.json`：见下方 JSON 区块。没有 json 区块时是 `{}`
 - `watchFiles`：源文件，json 脚本里解析到的相对 `require`，以及 `usingComponents` 里的相对路径（无后缀时补 `.mpx`）
 
-写出模板、样式、json 之前会调用 `applyPlatformRules(input, { type, mode, srcMode })`。`type` 是 `'template' | 'style' | 'json'`，`mode` 是目标平台，`srcMode` 是源码方言。当前 `getRulesRunner` 为空，输入原样返回，所以 `wx:if` 出现在 `axml` 里也不会被改成 `a:if`。规则表只替换这个 runner。页面 `<script>` 不经过它。
+写出模板、样式、json 之前会调用 `applyPlatformRules(input, { type, mode, srcMode })`。`type` 是 `'template' | 'style' | 'json'`，`mode` 是目标平台，`srcMode` 是源码方言。规则表在 `src/platform`；页面 `<script>` 不经过它。
 
 ## JSON 区块
 
@@ -96,15 +136,14 @@ fixture：`fixtures/page.mpx`、`fixtures/child.mpx`。
 - 执行时能读到 `__mpx_mode__`（当前 `mode`）、`__mpx_src_mode__`（当前 `srcMode`）、`__mpx_env__`（`env` 选项，省略则是 `undefined`）。`defs` 里的其它标识符也会注入；与这三项同名时以这三项为准
 - `#/` 开头的 `require` 会直接报错。自定义别名不在这个切片里解析
 
-Web 和小程序共用这套结果：Web 把 `usingComponents` 收成组件 import，其余字段放进 `__mpxPageConfig`；小程序把整个对象写进 `files.json`。
+Web 和小程序共用这套结果：Web 把 `usingComponents` 收成组件 import，其余字段放进 `__mpxPageConfig`；小程序把整个对象写进 `files.json`。RN 则走 `getRulesRunner({ type: 'json' })` 后再生成依赖 require。
 
 ## 这个切片不做的事
 
-- 模板 AST、`wx:if` 静态折叠、`@mode` 属性筛选、组件属性/事件的跨端规则表（`applyPlatformRules` 的 runner 仍是空的）
 - json 脚本里的 TypeScript，以及 `#/` 等路径别名
 - 样式预处理（`lang` 原样进入样式资产）、wxs、`src` 外链 template
-- `tenon`，以及 ios / android / harmony
-- 把小程序离散资产接进 unplugin 的模块图（`@mpxjs/unplugin` 仍只服务 Web Vue SFC）
+- `tenon`
+- 把小程序离散资产接进 unplugin 的模块图（`@mpxjs/unplugin` 服务 Web Vue SFC 与 RN JS 模块）
 
 ## 测试
 
