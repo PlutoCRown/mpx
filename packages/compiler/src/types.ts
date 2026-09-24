@@ -24,6 +24,8 @@ export interface CompileMpxFileOptions {
   resourcePath: string
   ctorType?: MpxCtorType
   context?: string
+  env?: string
+  defs?: Record<string, unknown>
   platform?: PlatformHooks
 }
 

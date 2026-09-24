@@ -65,15 +65,24 @@ fixture：`fixtures/page.mpx`、`fixtures/child.mpx`。
 - `files.js`：选中的 `<script>` 原文，不改写成 Vue，也不注入运行时包装
 - `files.wxml`：选中的 `<template>` 原文
 - `files.wxss`：命中的 `<style>` 原文按出现顺序拼接
-- `files.json`：`<script type="application/json">` 解析后再 `JSON.stringify`。没有 json 区块时是 `{}`
-- `watchFiles`：源文件，加上 `usingComponents` 里相对路径（无后缀时补 `.mpx`）
+- `files.json`：见下方 JSON 区块。没有 json 区块时是 `{}`
+- `watchFiles`：源文件，json 脚本里解析到的相对 `require`，以及 `usingComponents` 里的相对路径（无后缀时补 `.mpx`）
 
-`platform` 在写出 wxml / wxss / json 之前调用，默认什么都不改。脚本不经过这个 hook。
+`platform` 在写出 wxml / wxss / json 之前调用，默认什么都不改。页面 `<script>` 不经过这个 hook。
+
+## JSON 区块
+
+- `<script type="application/json">`：`JSON.parse`
+- `<script name="json">`：当作 JS 执行，读取 `module.exports`，再按 JSON 收成普通对象。可以写注释、`const`、`if`，以及 `require('./relative')`（被引用文件同样按 json JS 执行，并进入 `watchFiles`）
+- 执行时能读到 `__mpx_mode__`（当前 `mode`）、`__mpx_src_mode__`（当前 `srcMode`）、`__mpx_env__`（`env` 选项，省略则是 `undefined`）。`defs` 里的其它标识符也会注入；与这三项同名时以这三项为准
+- `#/` 开头的 `require` 会直接报错。自定义别名不在这个切片里解析
+
+Web 和 wx 共用这套结果：Web 把 `usingComponents` 收成组件 import，其余字段放进 `__mpxPageConfig`；wx 把整个对象写进 `files.json`。
 
 ## 这个切片不做的事
 
 - 模板 AST、`wx:if` 静态折叠、`@mode` 属性筛选、组件属性/事件的跨端规则表
-- `<script name="json">` 里的 JS / `module.exports`（会在 JSON.parse 失败时说明这一点）
+- json 脚本里的 TypeScript，以及 `#/` 等路径别名
 - 样式预处理（`lang` 原样进入 wxss）、wxs、`src` 外链 template
 - ali / swan / qq / tt / jd / web 以外目标的小程序产物，以及 ios / android / harmony
 - 把四份 wx 资产接进 unplugin 的模块图（`@mpxjs/unplugin` 仍只服务 Web Vue SFC）

@@ -18,18 +18,26 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
   }
   const resourceFile = resolveResource(options.resourcePath, options.context)
   const parsed = parseSfc(source)
+  const jsonContext = {
+    mode,
+    srcMode,
+    env: options.env,
+    defs: options.defs
+  }
   if (mode === 'wx') {
     return compileWxAssets({
       parsed,
       resourceFile,
-      platform: options.platform
+      platform: options.platform,
+      jsonContext
     })
   }
 
   const template = pickBlock(parsed.templates, 'web')
   const script = pickBlock(parsed.scripts, 'web')
   const jsonBlock = pickBlock(parsed.jsons, 'web')
-  const json = jsonBlock ? parseJsonBlock(jsonBlock, resourceFile) : {}
+  const parsedJson = jsonBlock ? parseJsonBlock(jsonBlock, resourceFile, jsonContext) : emptyJson()
+  const json = parsedJson.json
   const usingComponents = readUsingComponents(json)
   const pageConfig = readPageConfig(json)
   const built = buildScript({
@@ -53,10 +61,17 @@ export function compileMpxFile (source: string, options: CompileMpxFileOptions):
   })
 
   const watchFiles = [resourceFile]
+  parsedJson.watchFiles.forEach((file) => {
+    if (watchFiles.indexOf(file) < 0) watchFiles.push(file)
+  })
   built.watchFiles.forEach((file) => {
     if (watchFiles.indexOf(file) < 0) watchFiles.push(file)
   })
   return { mode: 'web', code, watchFiles }
+}
+
+function emptyJson (): { json: Record<string, unknown>, watchFiles: string[] } {
+  return { json: {}, watchFiles: [] }
 }
 
 function resolveResource (resourcePath: string, context?: string): string {

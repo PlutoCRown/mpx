@@ -104,18 +104,6 @@ describe('compileMpxFile wx assets', () => {
     expect(files.js).toContain('createComponent({')
   })
 
-  it('does not compile <script name="json"> JavaScript', () => {
-    const source = [
-      '<script name="json">',
-      'module.exports = { navigationBarTitleText: "Hi" }',
-      '</script>'
-    ].join('\n')
-    expect(() => compileMpxFile(source, {
-      mode: 'wx',
-      resourcePath: 'page.mpx'
-    })).toThrow(/module\.exports is not compiled in this slice/)
-  })
-
   it('emits empty assets when the file has no blocks', () => {
     const empty = compileMpxFile('', {
       mode: 'wx',

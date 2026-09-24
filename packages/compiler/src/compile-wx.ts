@@ -1,4 +1,5 @@
 import * as path from 'path'
+import type { JsonJsContext } from './eval-json-js'
 import { parseJsonBlock, readUsingComponents } from './json-block'
 import { resolvePlatform } from './platform'
 import { matchingStyles, pickBlock } from './select'
@@ -8,6 +9,7 @@ export function compileWxAssets (input: {
   parsed: ParsedSfc
   resourceFile: string
   platform?: PlatformHooks
+  jsonContext: JsonJsContext
 }): CompileMpxFileResult {
   const resourceFile = input.resourceFile
   const template = pickBlock(input.parsed.templates, 'wx')
@@ -17,7 +19,8 @@ export function compileWxAssets (input: {
     throw new Error('[mpx compiler][' + resourceFile + ']: template src is not supported; keep the template inline')
   }
 
-  const json = jsonBlock ? parseJsonBlock(jsonBlock, resourceFile) : {}
+  const parsedJson = jsonBlock ? parseJsonBlock(jsonBlock, resourceFile, input.jsonContext) : { json: {}, watchFiles: [] }
+  const json = parsedJson.json
   const platform = resolvePlatform(input.platform)
   const ctx: PlatformContext = {
     mode: 'wx',
@@ -39,12 +42,15 @@ export function compileWxAssets (input: {
       wxss: platform.style(wxss, ctx),
       json: JSON.stringify(nextJson, null, 2) + '\n'
     },
-    watchFiles: collectWatchFiles(resourceFile, readUsingComponents(nextJson))
+    watchFiles: collectWatchFiles(resourceFile, parsedJson.watchFiles, readUsingComponents(nextJson))
   }
 }
 
-function collectWatchFiles (resourceFile: string, usingComponents: Array<{ name: string, request: string }>): string[] {
+function collectWatchFiles (resourceFile: string, extra: string[], usingComponents: Array<{ name: string, request: string }>): string[] {
   const watchFiles = [resourceFile]
+  extra.forEach((file) => {
+    if (watchFiles.indexOf(file) < 0) watchFiles.push(file)
+  })
   usingComponents.forEach((component) => {
     const request = toComponentRequest(component.request)
     const watched = resolveWatch(resourceFile, request)

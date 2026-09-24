@@ -1,18 +1,17 @@
+import { buildJsonDefs, evalJsonJs } from './eval-json-js'
+import type { JsonJsContext } from './eval-json-js'
 import type { SfcBlock } from './types'
 
-export function parseJsonBlock (block: SfcBlock, resourceFile: string): Record<string, unknown> {
-  try {
-    const parsed: unknown = JSON.parse(block.content)
-    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
-      throw new Error('JSON block must be an object')
-    }
-    return parsed as Record<string, unknown>
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error)
-    const hint = block.name === 'json'
-      ? ' (<script name="json"> JS / module.exports is not compiled in this slice)'
-      : ''
-    throw new Error('[mpx compiler][' + resourceFile + ']: ' + message + hint)
+export interface ParsedJsonBlock {
+  json: Record<string, unknown>
+  watchFiles: string[]
+}
+
+export function parseJsonBlock (block: SfcBlock, resourceFile: string, context: JsonJsContext): ParsedJsonBlock {
+  if (block.name === 'json') return parseJsonJsBlock(block.content, resourceFile, context)
+  return {
+    json: parsePureJson(block.content, resourceFile),
+    watchFiles: []
   }
 }
 
@@ -33,4 +32,44 @@ export function readPageConfig (json: Record<string, unknown>): Record<string, u
     if (key !== 'usingComponents') config[key] = json[key]
   })
   return Object.keys(config).length ? config : null
+}
+
+function parseJsonJsBlock (content: string, resourceFile: string, context: JsonJsContext): ParsedJsonBlock {
+  const watchFiles: string[] = []
+  let exported: unknown
+  try {
+    exported = evalJsonJs(content, resourceFile, buildJsonDefs(context), watchFiles)
+  } catch (error) {
+    if (error instanceof Error && error.message.indexOf('[mpx compiler][') === 0) throw error
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error('[mpx compiler][' + resourceFile + ']: ' + message)
+  }
+  return {
+    json: toJsonObject(exported, resourceFile),
+    watchFiles
+  }
+}
+
+function parsePureJson (content: string, resourceFile: string): Record<string, unknown> {
+  try {
+    return toJsonObject(JSON.parse(content), resourceFile)
+  } catch (error) {
+    if (error instanceof Error && error.message.indexOf('[mpx compiler][') === 0) throw error
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error('[mpx compiler][' + resourceFile + ']: ' + message)
+  }
+}
+
+function toJsonObject (value: unknown, resourceFile: string): Record<string, unknown> {
+  let normalized: unknown
+  try {
+    normalized = JSON.parse(JSON.stringify(value))
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error)
+    throw new Error('[mpx compiler][' + resourceFile + ']: ' + message)
+  }
+  if (!normalized || typeof normalized !== 'object' || Array.isArray(normalized)) {
+    throw new Error('[mpx compiler][' + resourceFile + ']: JSON block must be an object')
+  }
+  return normalized as Record<string, unknown>
 }
