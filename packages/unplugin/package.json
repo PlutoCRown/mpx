@@ -32,7 +32,7 @@
     "node": ">=18.12.0"
   },
   "dependencies": {
-    "@mpxjs/compiler": "0.0.1",
+    "@mpxjs/compiler": "^2.11.1",
     "unplugin": "2.3.11"
   },
   "devDependencies": {
