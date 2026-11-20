@@ -2,7 +2,7 @@ const path = require('node:path')
 const addQuery = require('@mpxjs/webpack-plugin/lib/utils/add-query')
 const parseRequest = require('@mpxjs/webpack-plugin/lib/utils/parse-request')
 const { matchCondition } = require('@mpxjs/webpack-plugin/lib/utils/match-condition')
-const transformScript = require('./transform-script')
+const transformScript = require('./transform-script-native')
 
 module.exports = function scriptLoader (source, inputSourceMap) {
   const { queryObj } = parseRequest(this.resource)
@@ -27,7 +27,20 @@ module.exports = function scriptLoader (source, inputSourceMap) {
     return source
   }
   this.cacheable(false)
+  const callback = this.async()
   const warn = message => this.emitWarning(message instanceof Error ? message : new Error(message))
+  const independent = packageRoot && graph.independentPackages.has(packageRoot)
+  const rewriteRequest = packageRoot && (independent || options.subpackageModulesRules)
+? (request, kind) => {
+    if (request.startsWith('node:') || request.includes('!')) return request
+    const resolved = graph.resolveSync(context, request, { tracked: false, optional: true, dependencyType: kind })
+    if (!resolved) return request
+    const { rawResourcePath } = parseRequest(resolved)
+    if (!/\.[cm]?[jt]sx?$/.test(rawResourcePath)) return request
+    if (!independent && !matchCondition(rawResourcePath, options.subpackageModulesRules)) return request
+    return addQuery(resolved, { mpxPackage: packageRoot })
+  }
+: undefined
   const transform = (content, sourceMap) => {
     const opts = Object.assign({}, options, {
       filename: this.resourcePath,
@@ -43,37 +56,20 @@ module.exports = function scriptLoader (source, inputSourceMap) {
         return '/' + result.name
       },
       requireAsync: (request, info) => build.asyncRequest(context, request, info),
-      rewriteRequest: (request, kind) => {
-        if (!packageRoot || request.startsWith('node:') || request.includes('!')) return request
-        const independent = graph.independentPackages.has(packageRoot)
-        if (!independent && !options.subpackageModulesRules) return request
-        const resolved = graph.resolveSync(context, request, { tracked: false, optional: true, dependencyType: kind })
-        if (!resolved) return request
-        const { rawResourcePath } = parseRequest(resolved)
-        if (!/\.[cm]?[jt]sx?$/.test(rawResourcePath)) return request
-        if (!independent && !matchCondition(rawResourcePath, options.subpackageModulesRules)) return request
-        return addQuery(resolved, { mpxPackage: packageRoot })
-      }
+      rewriteRequest
     })
-    return transformScript(content, opts)
+    transformScript(content, opts).then(result => callback(null, result.code, result.map), callback)
   }
   if (setup) {
     const compileScriptSetup = require('@mpxjs/webpack-plugin/lib/script-setup-compiler')
-    const callback = this.async()
     const facade = Object.create(this)
     facade.resource = addQuery(this.resource, { ctorType: entry.type, lang: block.lang })
     facade.async = () => (err, content, sourceMap) => {
       if (err) return callback(err)
-      try {
-        const result = transform(content, sourceMap)
-        callback(null, result.code, result.map)
-      } catch (error) {
-        callback(error)
-      }
+      transform(content, sourceMap)
     }
     compileScriptSetup.call(facade, code, map).catch(callback)
     return
   }
-  const result = transform(code, map)
-  this.callback(null, result.code, result.map)
+  transform(code, map)
 }

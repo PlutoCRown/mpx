@@ -1,11 +1,11 @@
 const path = require('node:path')
 const { transformSync, template, types: t } = require('@babel/core')
 const addQuery = require('@mpxjs/webpack-plugin/lib/utils/add-query')
-const parseRequest = require('@mpxjs/webpack-plugin/lib/utils/parse-request')
 const hasOwn = require('@mpxjs/webpack-plugin/lib/utils/has-own')
 const { matchCondition } = require('@mpxjs/webpack-plugin/lib/utils/match-condition')
 const { transSubpackage } = require('@mpxjs/webpack-plugin/lib/utils/trans-async-sub-rules')
 const { isReact } = require('@mpxjs/webpack-plugin/lib/utils/env')
+const { getAsyncRequest, getResolveRequest } = require('./script-requests')
 const frameworkPackages = path.dirname(path.dirname(require.resolve('@mpxjs/webpack-plugin/package.json')))
 
 function isFrameworkResource (filename) {
@@ -117,15 +117,14 @@ module.exports = function transformScript (source, {
   }
 
   function resolved (request) {
-    if (!resolvePath || !request.includes('?') || !parseRequest(request).queryObj.resolve) return
-    return resolvePath(addQuery(request, {}, false, ['resolve']))
+    if (!resolvePath) return
+    const target = getResolveRequest(request)
+    if (target !== undefined) return resolvePath(target)
   }
 
   function replaceAsync (path, request, wrapRetry) {
-    const { queryObj, resourcePath } = parseRequest(request)
-    const declaredRoot = queryObj.root || asyncSubpackageRules?.find(rule => matchCondition(resourcePath, rule))?.root
+    const { root: declaredRoot, request: cleanRequest } = getAsyncRequest(request, asyncSubpackageRules)
     const packageRoot = react ? transSubpackage(rnConfig?.transSubpackageRules, declaredRoot) : declaredRoot
-    const cleanRequest = queryObj.root ? addQuery(request, {}, false, ['root']) : request
     if (packageRoot && supportsAsync) {
       const code = requireAsync?.(cleanRequest, { packageRoot, mode, filename })
       let expression
