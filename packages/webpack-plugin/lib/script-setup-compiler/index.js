@@ -66,7 +66,7 @@ function compileScriptSetup (
   // const genSourceMap = false
 
   let startOffset = 0
-  let endOffset = 0
+  let setupOffset
   let hasDefinePropsCall = false
   let hasDefineOptionsCall = false
   let hasDefineExposeCall = false
@@ -528,21 +528,20 @@ function compileScriptSetup (
     }
 
     // working with TS code
-    if (isTS) {
-      if (
-        node.type.startsWith('TS') ||
-        (node.type === 'ExportNamedDeclaration' &&
-          node.exportKind === 'type') ||
-        (node.type === 'VariableDeclaration' && node.declare)
-      ) {
-        recordType(node, declaredTypes)
-        if (node.start !== 0) {
-          _s.move(node.start, node.end + 1, 0)
-        }
+    const isTypeDeclaration = isTS && (
+      node.type.startsWith('TS') ||
+      (node.type === 'ExportNamedDeclaration' && node.exportKind === 'type') ||
+      (node.type === 'VariableDeclaration' && node.declare)
+    )
+    if (isTypeDeclaration) {
+      recordType(node, declaredTypes)
+      if (start !== 0) {
+        _s.move(start, node.end, 0)
+        _s.appendLeft(node.end, '\n')
       }
+    } else if (node.type !== 'ImportDeclaration') {
+      setupOffset ??= start
     }
-
-    endOffset = node.loc.end.index
   }
 
   // 2. extract runtime props code from setup context type
@@ -562,8 +561,8 @@ function compileScriptSetup (
   }
   // inject user assignment of props
   if (propsIdentifier) {
-    _s.prependLeft(
-      startOffset,
+    _s.prependRight(
+      setupOffset,
       `\nconst ${propsIdentifier} = __props${
         propsTypeDecl ? ' as any' : ''
         }\n`)
@@ -589,7 +588,7 @@ function compileScriptSetup (
     }
     returned = `{ ${Object.keys(allBindings).join(', ')} }`
   }
-  _s.appendRight(endOffset, `\nreturn ${returned}\n}\n\n`)
+  _s.append(`\nreturn ${returned}\n}\n\n`)
 
   // 6. finalize default export
   let runtimeOptions = ''
@@ -617,12 +616,12 @@ function compileScriptSetup (
 
   // import {createComponent} from '@mpxjs/core' 添加是否已有import判断
   const ctor = getCtor(ctorType)
-  _s.prependLeft(
-    startOffset,
+  _s.prependRight(
+    setupOffset,
     `\nimport {${ctor}} from '${MPX_CORE}'\n${getCtor(ctorType)} ({${runtimeOptions}\n  ` +
       `setup(${args}) {\n const useContext = () => { return __context }\n`
   )
-  _s.appendRight(endOffset, '})')
+  _s.append('})')
 
   return {
     content: _s.toString(),

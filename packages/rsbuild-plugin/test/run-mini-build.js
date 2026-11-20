@@ -24,12 +24,13 @@ async function main () {
   await fs.mkdir(path.join(source, 'independent'), { recursive: true })
   await fs.symlink(path.join(workDir, 'node_modules'), path.join(root, 'node_modules'), 'junction')
   await fs.writeFile(path.join(source, 'app.mpx'), appJson(['./index']))
-  const index = '<template><wxs module="format">module.exports = {msg: __mpx_wxs__ ? "native" : "js"};</wxs><view class="text-test">{{format.msg}} {{$t("hello")}}</view></template><script setup lang="ts">const value: string = "demo"; defineExpose({ value });</script><style>view { color: red; }</style>'
+  const index = '<template><wxs module="format">module.exports = {msg: __mpx_wxs__ ? "native" : "js"};</wxs><view class="text-test">{{format.msg}} {{$t("hello")}}</view></template><script setup lang="ts">import type { Props } from "./props"; const value: Props["value"] = "demo"; export interface ViewState { value: string }; defineExpose({ value });</script><style>view { color: red; }</style>'
   const sub = '<template src="./part.wxml"></template><script>Page({ value: require("../shared"), platform: require("./device.js"), process: process.browser, onLoad: () => require.async("./async.js?root=sub"), ordinaryImport: () => import("./ordinary.js") })</script>'
   await fs.writeFile(path.join(source, 'index.mpx'), index)
   await fs.writeFile(path.join(source, 'sub/sub.mpx'), command === 'watch-production' ? sub.replace('platform: ', 'route: require("../index?resolve"), platform: ') : sub)
   await fs.writeFile(path.join(source, 'sub/part.wxml'), '<view>sub</view>')
   await fs.writeFile(path.join(source, 'shared.js'), 'module.exports = "shared"')
+  await fs.writeFile(path.join(source, 'props.ts'), 'export interface Props { value: string }')
   await fs.writeFile(path.join(source, 'sub/device.wx.js'), 'module.exports = "wx"')
   await fs.writeFile(path.join(source, 'independent/entry.mpx'), '<template><view>independent</view></template><script>Page({ value: require("../shared") })</script>')
   await fs.writeFile(path.join(source, 'sub/async.js'), 'module.exports = "async"')
