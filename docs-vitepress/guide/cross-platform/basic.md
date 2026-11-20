@@ -96,6 +96,10 @@ npm run build:cross
 mpx-cli-service build --targets=wx,ali,web
 ```
 
+### Rsbuild 的 Web 样式 {#rsbuild-web-styles}
+
+`pluginMpx({ mode: 'web' })` 接入 Vue 2.7、CSS 和 Stylus。已有 Sass 或 Less 样式的项目，在 `rsbuild.config.*` 的 `plugins` 中注册对应的 Rsbuild 插件。Stylus 全局变量和 mixin 可以使用 `pluginStylus({ stylusOptions: { import: [...] } })` 指定。Mpx 的样式作用域和 `rpx` 转换适用于 Mpx 样式块及其 `src` 引用，独立样式文件仍可使用 Mpx 样式条件编译。[Sass](https://v2.rsbuild.rs/plugins/list/plugin-sass) · [Less](https://v2.rsbuild.rs/plugins/list/plugin-less) · [Stylus](https://v2.rsbuild.rs/plugins/list/plugin-stylus)
+
 ## 项目结构 {#project-structure}
 
 跨端项目的典型目录结构：

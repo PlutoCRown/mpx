@@ -8,7 +8,7 @@ function getRawSource (s) {
 
 function getReplaceSource (s) {
   if (s instanceof ReplaceSource) { return s }
-  if (s instanceof Source) { return new ReplaceSource(s) }
+  if (s instanceof Source || (s && typeof s.sourceAndMap === 'function')) { return new ReplaceSource(s) }
   return new ReplaceSource(new RawSource(s))
 }
 

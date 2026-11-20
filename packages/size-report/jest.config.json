@@ -1,0 +1,5 @@
+{
+  "displayName": "@mpxjs/size-report",
+  "testEnvironment": "node",
+  "rootDir": "./"
+}

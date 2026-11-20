@@ -48,6 +48,8 @@ npm install
 
 ## 编译构建 {#compile-build}
 
+使用 Rsbuild 的项目在 `rsbuild.config.*` 声明入口和 Mpx 插件。配置示例和选项见 [Rsbuild 构建](../../api/compile.md#rsbuild)。新版 `mpx-cli-service` 会读取该配置，小程序 `serve` 持续写入产物目录，Web `serve` 启动开发服务器。
+
 相关命令
 
 ```json

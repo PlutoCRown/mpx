@@ -32,12 +32,10 @@ module.exports = function (script, {
 
   const { disablePageTransition = true } = webConfig
 
-  let output = '/* script */\n'
-
   if (!script) {
     script = { tag: 'script' }
   }
-  output += genComponentTag(script, {
+  const tagOptions = {
     attrs (script) {
       const attrs = Object.assign({}, script.attrs)
       // src改为内联require，删除
@@ -125,8 +123,13 @@ module.exports = function (script, {
   })`
       return content
     }
-  })
-
+  }
+  let output
+  try {
+    output = '/* script */\n' + genComponentTag(script, tagOptions)
+  } catch (error) {
+    return callback(error)
+  }
   callback(null, {
     output
   })

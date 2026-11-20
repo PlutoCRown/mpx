@@ -34,6 +34,30 @@ module.exports = () => {
 }
 ```
 
+## Rsbuild 构建 {#rsbuild}
+
+Rsbuild 项目使用 `@mpxjs/rsbuild-plugin`。通过 `source.entry` 声明 Mpx 应用入口，用 `pluginMpx` 指定输出平台、源码方言和环境。`mode` 和 `srcMode` 的语义与现有 Mpx 构建一致，Rsbuild 自身的构建模式在配置顶层声明。
+
+```ts
+// rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import { pluginMpx } from '@mpxjs/rsbuild-plugin'
+
+export default defineConfig({
+  source: { entry: { app: './src/app.mpx' } },
+  plugins: [pluginMpx({ mode: 'wx', srcMode: 'wx' })],
+  output: { distPath: { root: 'dist/wx' } }
+})
+```
+
+配置 `resolve.alias` 解析项目别名，配置 `output.copy` 拷贝 `project.config.json` 等平台文件。小程序使用 `rsbuild build --watch` 持续落盘，使用 `rsbuild inspect` 查看最终配置。项目使用新版 `mpx-cli-service` 时，CLI 会识别 `rsbuild.config.*`，并保留 `build`、`serve` 和多目标参数。需要让 CLI 的目标和环境传入配置时，在配置函数中读取 `meta.mpx.mode` 和 `meta.mpx.env`。
+
+`pluginMpx` 的 `defs` 会同时提供给 Mpx 编译和打包。小程序项目可以在 `appImports` 声明应用启动前执行的模块。`scriptPlugins(resourcePath, code)` 可以按文件返回 Babel 插件，用于把业务自定义 Webpack parser 插件迁移为源码转换。
+
+小程序生产构建默认启用压缩，可以通过 Rsbuild 的 `output.minify` 调整。普通 `import()` 仍返回 Promise，其模块随调用方打包。需要生成平台异步分包时，使用 [Mpx 异步分包](../guide/advance/async-subpackage.md) 的 `require.async`。
+
+旧项目可以继续使用原有的 Webpack 配置。迁入 Rsbuild 时，使用 `srcModeRules` 指定源码方言，用 `checkUsingComponentsRules` 配置组件检查，并用 `partialCompileRules.pages` 和 `partialCompileRules.components` 分别配置部分编译范围。
+
 ## 类型定义 {#type-definition}
 
 为了便于对编译配置的数据类型进行准确地描述，我们在这里对一些常用的配置类型进行定义

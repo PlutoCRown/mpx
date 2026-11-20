@@ -65,6 +65,8 @@ module.exports = {
 
 使用 Mpx CLI 工程时，以上插件选项通常写在 `mpx.config.js` 的 `pluginOptions.mpx.plugin` 中。已有多端构建配置时，沿用工程的目标选择方式；RN 的 `mode` 为 `ios` / `android` / `harmony`，不要写成 `react`。
 
+使用 Rsbuild 的工程通过 `@mpxjs/rsbuild-plugin` 的 `pluginMpx` 配置 `mode`、`srcMode` 和编译期 `rnConfig`，在 `source.entry` 声明 `.mpx` 应用入口。原生宿主负责装载入口 JS。启用异步分包时，宿主通过 `Mpx.config.rnConfig.loadChunkAsync` 加载并执行异步 JS。参见 [新版 Mpx Skill 的 RN 配置](../../mpx/references/rn/rn-config-reference.md#配置入口与生效阶段)。
+
 ### 平台与条件编译
 
 | 配置项 | 默认值 | 说明 |

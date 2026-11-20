@@ -1,0 +1,44 @@
+{
+  "name": "@mpxjs/rsbuild-plugin",
+  "version": "2.11.3",
+  "description": "Mpx build plugin for Rsbuild and Rspack",
+  "license": "Apache-2.0",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "dependencies": {
+    "@babel/core": "^7.25.2",
+    "@mpxjs/webpack-plugin": "^2.11.3",
+    "@rsbuild/plugin-stylus": "2.0.1",
+    "@rsbuild/plugin-vue2": "1.2.1",
+    "enhanced-resolve": "^5.24.0",
+    "hash-sum": "^2.0.0",
+    "json5": "^2.1.3",
+    "loader-utils": "^2.0.0",
+    "postcss": "^8.4.5",
+    "process": "^0.11.10"
+  },
+  "peerDependencies": {
+    "@rsbuild/core": "~2.3.3"
+  },
+  "devDependencies": {
+    "@rsbuild/core": "2.3.3",
+    "vue-i18n": "8.28.2",
+    "vue-i18n-bridge": "9.14.0",
+    "vue-router": "3.6.5",
+    "vue-server-renderer": "2.7.16"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/didi/mpx.git",
+    "directory": "packages/rsbuild-plugin"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

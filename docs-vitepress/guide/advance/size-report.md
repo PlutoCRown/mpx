@@ -8,7 +8,7 @@ Mpx 在包体积控制上做了很多工作，主要包括：
 * [图像资源处理](image-process.md)
 * [公共样式复用](../basic/css.md#common-style-reuse)
 
-此外由于 Mpx 的编译构建完全基于 webpack，也能够直接复用webpack生态自带的代码压缩，模块复用，tree shaking，side effects 等能力对代码体积进行优化。
+Mpx 构建可以复用打包器的代码压缩、模块复用、tree shaking 和 side effects 等能力来优化代码体积。
 
 但是系统能做的工作终究有限，在一些人为不规范操作的影响下，最终输出的项目依然可能存在大量优化空间，比如在业务中不会被调用但无法被 tree shaking / side effects 移除的代码，因为 npm 依赖版本不统一造成的重复依赖，未经压缩的图像静态资源等，在大型项目中，这些问题想要被发现会非常困难，因此我们非常需要一个体积分析工具来管控项目体积和发现隐藏的体积问题。
 
@@ -27,6 +27,32 @@ Mpx 在包体积控制上做了很多工作，主要包括：
 ```
 npm i @mpxjs/size-report --save-dev
 ```
+
+### Rsbuild 接入 {#rsbuild-size-report}
+
+将 `pluginMpxSizeReport()` 加入 Rsbuild 的 `plugins`。小程序构建通过 `pluginMpx()` 提供分包归属信息。
+
+```js
+const { pluginMpx } = require('@mpxjs/rsbuild-plugin')
+const { pluginMpxSizeReport } = require('@mpxjs/size-report')
+
+module.exports = {
+  source: { entry: { app: './src/app.mpx' } },
+  plugins: [
+    pluginMpx({ mode: 'wx', srcMode: 'wx' }),
+    pluginMpxSizeReport({
+      filename: 'report.json',
+      reportAssets: true,
+      threshold: { packages: '2MiB' }
+    })
+  ]
+}
+```
+
+默认在产物目录写入 `report.json`。报告的 `totalBytes` 和 `packageBytes` 是排除 source map 后的实际产物字节。启用 `reportAssets` 后，`assetsSizeInfo.assets` 列出每个文件的 `bytes`，chunk 模块的 `estimatedBytes` 来自 Rspack 模块图。模块值属于打包器估算，与压缩后的文件大小分别统计。超出 `threshold` 会先写入报告并让构建以错误状态退出。
+
+一次性构建可通过 `server: { enable: true }` 打开报告浏览服务。Rspack 报告目前覆盖总包、分包、产物和模块估算，分组、页面、冗余归因及 Skyline 检查沿用下方的 Webpack 插件。
+
 #### 配置插件 {#config-plugin}
 在项目 webpack.config 文件中配置使用 `@mpxjs/size-report` 插件即可使用，简单示例如下：
 

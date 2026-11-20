@@ -164,6 +164,23 @@ function getPlugin (compiler, curPlugin) {
   return plugins.find(plugin => Object.getPrototypeOf(plugin).constructor === curPlugin)
 }
 
+function fromRspackBuild (info) {
+  const dynamicEntryInfo = {}
+  let appInfo
+  info.entries.forEach((entry) => {
+    const root = entry.packageRoot || 'main'
+    dynamicEntryInfo[root] ||= { entries: [] }
+    dynamicEntryInfo[root].entries.push({ entryType: entry.type, filename: entry.name, resource: entry.resourcePath })
+    if (entry.type === 'app') appInfo = { name: entry.name }
+  })
+  return {
+    mode: info.mode,
+    dynamicEntryInfo,
+    appInfo,
+    independentSubpackagesMap: Object.fromEntries(info.independentPackages)
+  }
+}
+
 class MpxUnocssPlugin {
   constructor (options = {}) {
     this.options = normalizeOptions(options)
@@ -298,12 +315,13 @@ class MpxUnocssPlugin {
     this.minify = isProductionLikeMode(compiler.options)
     // 处理web
     const mpxPluginInstance = getPlugin(compiler, MpxWebpackPlugin)
-    if (!mpxPluginInstance) {
+    const isRspack = !!compiler.rspack
+    if (!mpxPluginInstance && !isRspack) {
       const logger = compiler.getInfrastructureLogger(PLUGIN_NAME)
       logger.error(new Error('@mpxjs/unocss-plugin需要与@mpxjs/webpack-plugin配合使用，请检查!'))
       return
     }
-    const mode = this.mode = mpxPluginInstance.options.mode
+    const mode = mpxPluginInstance?.options.mode
     if (isWeb(mode) || isReact(mode)) {
       const { webOptions } = this.options
       const WebpackPlugin = isReact(mode) ? UnoCSSRNWebpackPlugin : UnoCSSWebpackPlugin
@@ -325,14 +343,18 @@ class MpxUnocssPlugin {
       // 确保在MpxWebpackPlugin后执行，获取mpx对象
       stage: 1000
     }, (compilation) => {
-      const { __mpx__: mpx } = compilation
-      mpx.hasUnoCSS = true
-      mpx.isUnoCSSScanFile = this.isUnoCSSScanFile
+      const info = compilation.mpxBuildInfo
+      const mpx = isRspack && info ? fromRspackBuild(info) : compilation.__mpx__
+      if (!mpx) return
+      const mode = this.mode = mpx.mode
+      const context = isRspack ? info : mpx
+      context.hasUnoCSS = true
+      context.isUnoCSSScanFile = this.isUnoCSSScanFile
       if (isWeb(mode) || isReact(mode)) return
       compilation.hooks.processAssets.tapPromise({
         name: PLUGIN_NAME,
         // 在 Mpx 主插件的资产处理前完成 UnoCSS 样式生成与注入。
-        stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS - 1
+        stage: compiler.webpack.Compilation.PROCESS_ASSETS_STAGE_ADDITIONS + (isRspack ? 1 : -1)
       }, async (assets) => {
         const error = (msg) => {
           compilation.errors.push(new Error(msg))
@@ -416,14 +438,17 @@ class MpxUnocssPlugin {
 
         await Promise.all(Object.entries(assets).map(([file, source]) => {
           if (file.endsWith(styleExt) || file.endsWith(templateExt)) {
-            const assetModules = assetsModulesMap.get(file)
-            if (assetModules && has(assetModules, (module) => {
+            const assetModules = assetsModulesMap?.get(file)
+            const shouldScan = isRspack
+              ? info.assetsSources.has(file) && this.isUnoCSSScanFile(info.assetsSources.get(file))
+              : assetModules && has(assetModules, (module) => {
               if (module.resource) {
                 const resourcePath = parseRequest(module.resource).resourcePath
                 return this.isUnoCSSScanFile(resourcePath)
               }
               return false
-            })) {
+            })
+            if (shouldScan) {
               if (this.options.transformCSS && file.endsWith(styleExt)) {
                 return processStyle(file, source)
               }

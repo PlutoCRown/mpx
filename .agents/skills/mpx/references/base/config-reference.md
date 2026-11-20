@@ -12,12 +12,19 @@
   - [规则匹配](#规则匹配)
   - [模板与样式配置](#模板与样式配置)
   - [分包与异步配置](#分包与异步配置)
+  - [Rsbuild 体积报告](#rsbuild-体积报告)
   - [性能探针](#性能探针)
 - [运行时配置](#运行时配置)
   - [初始化方式](#初始化方式)
   - [全局字段](#全局字段)
 
 ## 编译配置
+
+### Rsbuild 项目
+
+项目存在 `rsbuild.config.*` 时，查看 `source.entry`、`resolve.alias`、`output.distPath` 和 `pluginMpx` 配置。`pluginMpx({ mode, srcMode, env, defs })` 的 `mode` 是 Mpx 目标平台，Rsbuild 顶层 `mode` 是 development / production 构建模式。Rsbuild 支持直接 `build --watch` 落盘，新版 `mpx-cli-service serve` 在小程序目标也采用落盘 watch。实际命令、输出目录和平台文件复制配置以项目为准。参见 [Rsbuild 构建配置](https://mpxjs.cn/api/compile.html#rsbuild)。
+
+小程序生产构建默认压缩产物，可以用 `output.minify` 调整。普通 `import()` 的模块随调用方打包，仍通过 Promise 返回结果。需要平台异步分包时使用 `require.async('模块?root=分包名')`。
 
 ### 入口与阶段
 
@@ -91,6 +98,10 @@ CLI 工程将相同选项写入 `pluginOptions.mpx.plugin`。已有多端构建�
 | `asyncSubpackageRules` | `object[]` | `[]` | 按资源匹配规则指定异步分包及组件占位。 |
 | `retryRequireAsync` | `boolean\|object` | `false` | 配置 `require.async` 加载失败后的重试次数与间隔。 |
 | `disableRequireAsync` | `boolean` | `false` | 关闭框架对 `require.async` 的处理。 |
+
+### Rsbuild 体积报告
+
+在 Rsbuild 配置的 `plugins` 数组加入 `@mpxjs/size-report` 的 `pluginMpxSizeReport({ reportAssets: true })` 可生成体积报告。用 `totalBytes` 和 `packageBytes` 看实际产物大小，用 `estimatedBytes` 查模块在 Rspack 模块图中的估算。分组、页面、冗余归因及 Skyline 体积检查使用 Webpack 版本。 [包体积分析](https://www.mpxjs.cn/guide/advance/size-report.html#rsbuild-size-report)
 
 ### 性能探针
 

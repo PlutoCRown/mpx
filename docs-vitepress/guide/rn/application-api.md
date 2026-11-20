@@ -5,6 +5,7 @@
 ### 目录概览 {#directory-overview}
 
 - [配置能力](#config-ability) - App配置、页面配置、导航配置
+  - [使用 Rsbuild 构建 RN](#rsbuild-rn)
 - [状态管理](#state-management) - Pinia、Store、依赖注入
 - [国际化](#i18n) - i18n多语言支持
 - [API能力](#api-ability) - 跨平台API、Webview通信
@@ -12,6 +13,23 @@
 
 
 ## 配置能力 {#config-ability}
+
+### 使用 Rsbuild 构建 RN {#rsbuild-rn}
+
+将 Mpx 应用作为构建入口并指定需要输出的 RN 平台。以下配置输出 iOS，Android 和 Harmony 对应 `android` 和 `harmony`。
+
+```ts
+// rsbuild.config.ts
+import { defineConfig } from '@rsbuild/core'
+import { pluginMpx } from '@mpxjs/rsbuild-plugin'
+
+export default defineConfig({
+  source: { entry: { app: './src/app.mpx' } },
+  plugins: [pluginMpx({ mode: 'ios', srcMode: 'wx' })]
+})
+```
+
+执行 `rsbuild build` 生成 `dist/app.js` 和异步分包文件。原生宿主负责装载入口文件。使用异步分包时，通过 `Mpx.config.rnConfig.loadChunkAsync` 实现宿主加载和执行，详见本页的异步分包说明。
 
 ### App 全局配置 {#app-global-config}
 

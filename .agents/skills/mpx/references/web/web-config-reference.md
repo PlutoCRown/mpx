@@ -18,16 +18,16 @@
 
 ### 目标与源码
 
-输出 Web 时设 `mode: 'web'`、`srcMode: 'wx'`，Web 专属编译选项放在插件的 `webConfig` 中。
+输出 Web 时设 `mode: 'web'`、`srcMode: 'wx'`，Web 专属编译选项放在插件的 `webConfig` 中。Rsbuild 项目由 `@mpxjs/rsbuild-plugin` 的 `pluginMpx` 接入 Vue 2.7，`source.entry` 指向 `app.mpx`。需要 SSR 时，在同一配置中定义 Web 和 Node 环境，详见 [SSR 双端构建](./ssr-reference.md#双端构建)。
 
 ### 编译期 webConfig
 
-以下字段配置在 **`MpxWebpackPlugin` 的 `webConfig`** 中：
+以下字段配置在编译插件的 **`webConfig`** 中。Rsbuild 使用原生拆包配置，`asyncCommonSubpackage` 适用于 Webpack。
 
 | 属性 | 类型 | 默认值 | 用途 |
 | --- | --- | --- | --- |
 | `el` | `string` | `'#app'` | 客户端挂载选择器；使用 `#id` 形式，并与 HTML 容器保持一致。应用根节点的 id 也由此生成，不应仅因 Vue 支持其他选择器就使用 class 选择器。 |
-| `useSSR` | `boolean` | `false` | SSR 首屏可能进入异步路由页面（如异步分包页面）时设为 `true`，让客户端等待路由就绪后再挂载；同步页面无需设置。 |
+| `useSSR` | `boolean` | Rsbuild 配置 Node 环境时为 `true`，其余为 `false` | SSR 首屏可能进入异步路由页面（如异步分包页面）时设为 `true`，让客户端等待路由就绪后再挂载；同步页面无需设置。 |
 | `disablePageTransition` | `boolean` | `true` | 默认禁用页面切换动画；需要动画时设为 `false`。 |
 | `asyncCommonSubpackage` | `boolean` | `true` | 默认将多个异步 chunk 共享的公共模块抽取到 `async-common/index`；设为 `false` 时改为从所有 chunk 中提取公共模块并归入 app 主入口。插件仅在对应的 `async` / `main` cache group 未配置时添加该规则。 |
 | `transRpxFn` | `Function` | 未设置，默认按 `750rpx = 100vw` 换算 | 自定义 `rpx` 转换函数，同时用于编译期样式转换和运行时动态样式转换；函数约束见下文。 |

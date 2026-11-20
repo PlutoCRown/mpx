@@ -1,0 +1,5 @@
+{
+  "displayName": "rsbuild-plugin",
+  "testEnvironment": "node",
+  "testMatch": ["<rootDir>/test/**/*.spec.js"]
+}

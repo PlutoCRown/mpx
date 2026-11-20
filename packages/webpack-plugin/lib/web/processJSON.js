@@ -253,6 +253,7 @@ module.exports = function (jsonContent, {
           if (pageKeySet.has(key)) return callback()
           pageKeySet.add(key)
           const { resourcePath, queryObj } = parseRequest(resource)
+          if (mpx.getPageOutputPath) outputPath = mpx.getPageOutputPath(resource, outputPath)
           if (localPagesMap[outputPath]) {
             const { resourcePath: oldResourcePath } = parseRequest(localPagesMap[outputPath].resource)
             if (oldResourcePath !== resourcePath) {

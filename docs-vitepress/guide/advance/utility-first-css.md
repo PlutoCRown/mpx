@@ -103,6 +103,38 @@ plugins.push(new MpxUnocssPlugin())
 
 关于`uno.config.js`可用配置项及`@mpxjs/unocss-plugin`及`@mpxjs/unocss-base`的配置项请参考[API文档](../../api/compile.md#mpxunocssplugin-配置)。
 
+### Rsbuild 的 Web 原子类 {#rsbuild-web-unocss}
+
+Web 目标可使用 `unocss` 和 `@unocss/postcss`。将模板所在目录加入 UnoCSS 的扫描范围，并在 PostCSS 配置中注册 UnoCSS。
+
+```js
+// uno.config.mjs
+import { defineConfig, presetWind3 } from 'unocss'
+
+export default defineConfig({
+  content: { filesystem: ['src/**/*.{mpx,vue,html,js,ts}'] },
+  presets: [presetWind3()]
+})
+```
+
+```js
+// postcss.config.mjs
+import { fileURLToPath } from 'node:url'
+import UnoCSS from '@unocss/postcss'
+
+export default {
+  plugins: [UnoCSS({ cwd: fileURLToPath(new URL('.', import.meta.url)) })]
+}
+```
+
+在 Web 的 `app.mpx` 中加入全局样式区块。把旧 Web 入口里的 `import 'uno.css'` 迁到这里，由 PostCSS 将原子类写入客户端 CSS。多端共用的应用可以通过 `mode="web"` 限定该区块。SSR 使用同一套客户端 CSS。[UnoCSS PostCSS 文档](https://unocss.dev/integrations/postcss)
+
+```html
+<style mode="web">
+  @unocss;
+</style>
+```
+
 ### vscode插件支持 {#vscode-plugin-support}
 
 1. 安装 [unocss 官方插件](https://unocss.dev/integrations/vscode)。

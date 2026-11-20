@@ -32,7 +32,9 @@
 
 ### 双端构建
 
-沿用项目现有 loader、样式与资源链；下表仅列双端差异，基础配置见 [Web 配置](./web-config-reference.md)。
+Rsbuild 项目使用 `pluginMpx({ mode: 'web', srcMode: 'wx' })`，让 `source.entry` 指向同一个 `app.mpx`，在 `environments` 中分别配置 `output.target: 'web'` 和 `output.target: 'node'`，并指定不同的 `output.distPath.root`。插件为两个环境生成 Vue SSR 清单和服务端 bundle，自动为浏览器端开启 `useSSR`。示例见 [Rsbuild 双端构建](../../../../../docs-vitepress/guide/advance/ssr.md#rsbuild-ssr)。
+
+Webpack 项目沿用已有 loader、样式与资源链。下表列出 Webpack 双端构建差异，基础配置见 [Web 配置](./web-config-reference.md)。
 
 | 配置 | server | client |
 | --- | --- | --- |

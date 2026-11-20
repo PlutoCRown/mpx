@@ -20,9 +20,11 @@
 
 RN 输出选择 `ios` / `android` / `harmony`，项目 `srcMode` 使用 `wx`；不能把 mode 写成 `rn` 或 `react`。RN 条件文件回退见 [条件编译基准](../base/conditional-compile.md#rn-条件文件回退)。
 
+使用 Rsbuild 时，从 `@mpxjs/rsbuild-plugin` 导入 `pluginMpx`，设 `source.entry.app` 为应用的 `.mpx` 入口，在插件中传入 `mode`、`srcMode` 与编译期 `rnConfig`。产物默认位于 `dist`。原生工程仍需装载入口 JS 并在运行时通过 `Mpx.config.rnConfig.loadChunkAsync` 下载和执行异步 JS。
+
 ### 编译期 rnConfig
 
-以下字段配置在 **`MpxWebpackPlugin` 的 `rnConfig`** 中：
+以下字段配置在 `MpxWebpackPlugin` 或 `pluginMpx` 的 `rnConfig` 中。
 
 | 属性 | 类型 | 默认值 | 用途 |
 | --- | --- | --- | --- |

@@ -10,6 +10,26 @@
 
 Mpx SSR 核心基于 Vue SSR 实现，大致流程思路与 Vue 一致，不过为了保持与小程序代码的兼容性，在配置使用上有一些改动差异，下面我们详细展开介绍：
 
+### Rsbuild 双端构建 {#rsbuild-ssr}
+
+在 `rsbuild.config.mjs` 中注册 `pluginMpx`，让浏览器与 Node 环境使用同一个 `app.mpx` 作为入口。服务端环境只配置一个入口。
+
+```js
+import { defineConfig } from '@rsbuild/core'
+import { pluginMpx } from '@mpxjs/rsbuild-plugin'
+
+export default defineConfig({
+  plugins: [pluginMpx({ mode: 'web', srcMode: 'wx' })],
+  source: { entry: { index: './src/app.mpx' } },
+  environments: {
+    web: { output: { target: 'web', distPath: { root: 'dist/client' } } },
+    server: { output: { target: 'node', distPath: { root: 'dist/server' } } }
+  }
+})
+```
+
+运行 `rsbuild build` 后，`dist/server` 中的 `vue-ssr-server-bundle.json` 与 `dist/client` 中的 `vue-ssr-client-manifest.json` 可以直接传给 `createBundleRenderer`。将同次构建的服务端 bundle、客户端清单和 JS/CSS 资源一起部署，并使用与 Vue 2.7 完全相同版本的 `vue-server-renderer`。配置了 Node 环境时，浏览器入口默认等待初始路由就绪后挂载，适用于异步分包页的首屏请求。HTML 模板和 Node 服务的配置见[准备页面模板](#prepare-page-template)与[集成启动 SSR 服务](#integrate-ssr-server)。
+
 ### 构建server/client bundle {#build-server-client-bundle}
 
 SSR项目中，我们需要分别构建出 server bundle 和 client bundle，对于不同环境的产物构建，我们需要进行不同的配置。

@@ -12,6 +12,7 @@
 - [样式引入与作用范围](#样式引入与作用范围)
   - [样式隔离](#样式隔离)
   - [外部样式类](#外部样式类)
+  - [Rsbuild 原子类](#rsbuild-原子类)
 - [页面与组件宿主](#页面与组件宿主)
 
 ## 样式规则与选择器
@@ -52,6 +53,8 @@ new MpxWebpackPlugin({
 
 样式引入的通用写法见 [样式引入与作用范围](../base/style-reference.md#样式引入与作用范围)。Web 中未启用 scoped 的普通样式区块为全局样式，页面与组件均需按需隔离，具体要求见 [样式隔离](#样式隔离)。
 
+Rsbuild 项目默认接入 CSS 和 Stylus，使用 Sass 或 Less 时在 Rsbuild 配置中注册对应的预处理插件。内联样式区块与外部样式文件都支持 Mpx 样式条件编译。
+
 ### 样式隔离
 
 通用用法见 [样式隔离基准](../base/style-reference.md#样式隔离)，Web 需注意：
@@ -70,6 +73,10 @@ externalClasses: ['custom-class', 'i-class', 'accent-class']
 
 - 子组件中的占位类应写在静态 `class` 中，不通过动态表达式拼接。
 - 父组件使用 scoped 时，仍可通过外部样式类定制子组件内部节点。
+
+### Rsbuild 原子类
+
+Web 目标可通过 `@unocss/postcss` 生成 UnoCSS。将 `.mpx` 文件加入 `content.filesystem`，把 Web 入口的 `import 'uno.css'` 迁到 `app.mpx` 的全局样式区块 `<style mode="web">@unocss;</style>`。动态拼接的类名按 UnoCSS 的规则加入 safelist。配置示例见 [Rsbuild 的 Web 原子类](../../../../../docs-vitepress/guide/advance/utility-first-css.md#rsbuild-web-unocss)。
 
 ## 页面与组件宿主
 
