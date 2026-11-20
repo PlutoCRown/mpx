@@ -102,3 +102,34 @@ it('resolves a native npm component from its miniprogram distribution and collec
   expect(graph.assets.get('workers/worker.js').source.toString()).toBe('module.exports = "worker"')
   expect(graph.contextDependencies.has(path.join(context, 'workers'))).toBe(true)
 })
+
+it('compiles only matched routes and one fallback per empty package in a production mini build', async () => {
+  await write({
+    'app.mpx': configure({
+      pages: ['./hidden', './keep'],
+      packages: ['./more/app.mpx?root=mixed'],
+      subPackages: [{ root: 'mixed', pages: ['./keep'] }, { root: 'empty', pages: ['./first', './second'] }]
+    }),
+    'keep.mpx': configure({}),
+    'hidden.mpx': configure({ usingComponents: { missing: './missing' } }),
+    'more/app.mpx': configure({ pages: ['./unused'] }),
+    'more/unused.mpx': configure({}),
+    'mixed/keep.mpx': configure({}),
+    'empty/first.mpx': configure({}),
+    'empty/second.mpx': configure({})
+  })
+  const graph = await discoverEntries({ app: './app.mpx' }, {
+    context,
+    mode: 'wx',
+    production: true,
+    partialCompileRules: { include: /[/\\]keep\.mpx$/ }
+  })
+  expect(graph.entries.get('app').json).toEqual({
+    pages: ['keep'],
+    subPackages: [{ root: 'mixed', pages: ['keep'] }, { root: 'empty', pages: ['first'] }]
+  })
+  expect([...graph.entries.keys()]).toEqual(['app', 'keep', 'mixed/keep', 'empty/first'])
+  expect(graph.entries.get('empty/first').resourcePath).toMatch(/default-page\.mpx$/)
+  expect(graph.findEntry(path.join(context, 'empty/first.mpx'), 'empty')).toBe(graph.entries.get('empty/first'))
+  expect(graph.findEntry(path.join(context, 'hidden.mpx')).name).toBe('hidden')
+})

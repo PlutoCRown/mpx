@@ -92,3 +92,9 @@
 | 真实微信宿主 | `ut-otter` 控制中心开关分别出包，关闭时在微信开发者工具打开首页并进入搜索页，调试器显示 0 个错误，仍有组件属性类型等告警。`mp-apphome --mini=home --fast` 的隔离副本迁入旧 Webx 别名并移除重复的 `mpAuthorize` 导入后构建通过，逐一核对了 486 个路由和 2,173 个本地组件引用。 |
 
 新包提供 TypeScript 配置声明，适配器与入口图实现仍为 JavaScript。复用 Rspack 的 Rust 核心，本次没有新增 Mpx Rust 模块。旧 Express SSR middleware、size-report 的页面归因与冗余分析、`mp-apphome` H5/DRN 宿主、Harmony 原生打包、真机验收和完整新旧性能对照仍待核验。发布验证目前完成本地打包检查。
+
+### `mp-apphome watch:otter` 部分编译复测
+
+同机串行执行微信生产模式 watch，启用 source map 和控制中心。Rsbuild 按规则保留匹配页面，仅在没有匹配页面的主包或分包生成一个兜底入口，同次入口发现复用文件系统解析结果。路由数从 489 降到 191。Webpack 的 201 条路由含 10 条由业务插件额外注入的 Skills 页面。`passenger` 分包在两边均保留一个兜底页。
+
+Rsbuild 首次落盘从 58.8 秒降到 33.1 秒。对宿主开屏页模板做三次相同类型的编辑，落盘中位数从 69.9 秒降到 43.4 秒。每次均核对了输出 WXML。Webpack 首次落盘为 242.2 秒，增量构建遇到 WXS 产物冲突，缺少成功样本。

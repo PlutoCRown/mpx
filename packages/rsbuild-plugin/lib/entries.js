@@ -1,6 +1,6 @@
 const fs = require('fs')
 const path = require('path')
-const { ResolverFactory } = require('enhanced-resolve')
+const { CachedInputFileSystem, ResolverFactory } = require('enhanced-resolve')
 const JSON5 = require('json5')
 const hash = require('hash-sum')
 const { urlToRequest } = require('loader-utils')
@@ -35,6 +35,7 @@ const isMissing = error => error.message.startsWith("Can't resolve ")
 function createResolver (options, dependencies) {
   const { mode, env, projectRoot } = options
   const resolveOptions = options.resolve || {}
+  const fileSystem = new CachedInputFileSystem(fs, 60000)
   const fileConditionRules = options.fileConditionRules || { include: () => true }
   const plugins = [new AddModePlugin('before-file', mode, {
     fileConditionRules,
@@ -55,7 +56,7 @@ function createResolver (options, dependencies) {
         conditionNames,
         extensions: [...new Set(extensions.concat((overrides.extensions || resolveOptions.extensions || []).filter(value => value !== '...')))],
         roots: [projectRoot],
-        fileSystem: fs,
+        fileSystem,
         useSyncFileSystemCalls: true,
         plugins
       }))
@@ -102,6 +103,7 @@ async function discoverEntries (rootEntries, options = {}) {
   const env = options.env || ''
   const projectRoot = options.projectRoot || options.context || process.cwd()
   const miniProgram = isMiniProgram(mode)
+  const partialCompileRules = miniProgram || !options.production ? options.partialCompileRules : undefined
   const defs = Object.assign({}, options.defs, { __mpx_mode__: mode, __mpx_src_mode__: srcMode, __mpx_env__: env })
   const entries = new Map()
   const pageRoutes = new Map()
@@ -238,6 +240,14 @@ async function discoverEntries (rootEntries, options = {}) {
     return result.startsWith('.') ? result : './' + result
   }
 
+  function recordReference (request, entry) {
+    const { resourcePath, rawResourcePath } = parseRequest(request)
+    new Set([resourcePath, rawResourcePath]).forEach(key => {
+      if (!references.has(key)) references.set(key, [])
+      references.get(key).push(entry)
+    })
+  }
+
   async function register (request, type, name, packageRoot, state, originalRequest = request) {
     name = outputName(packageRoot ? `${packageRoot}/${name}` : name)
     const known = entries.get(name)
@@ -254,13 +264,8 @@ async function discoverEntries (rootEntries, options = {}) {
       independent: independentPackages.has(packageRoot)
     })
     entries.set(name, entry)
-    const original = parseRequest(originalRequest)
-    const originalKey = original.resourcePath
-    new Set([originalKey, original.rawResourcePath]).forEach(key => {
-      if (!references.has(key)) references.set(key, [])
-      references.get(key).push(entry)
-    })
-    if (type === 'component') componentEntries.set(`${packageRoot}\0${originalKey}`, entry)
+    recordReference(originalRequest, entry)
+    if (type === 'component') componentEntries.set(`${packageRoot}\0${parseRequest(originalRequest).resourcePath}`, entry)
     const context = path.dirname(entry.resourcePath)
     if (type === 'app' && mode !== entry.srcMode && entry.sourceJSON.usingComponents) {
       const components = Object.assign({}, entry.sourceJSON.usingComponents)
@@ -317,7 +322,14 @@ async function discoverEntries (rootEntries, options = {}) {
         name = packageRoot ? renamed.slice(packageRoot.length + 1) : renamed
       }
     }
-    const sourceRequest = !options.production && isPartialCompileExcluded(resourcePath, options.partialCompileRules, 'page') ? defaultPage : resolved.request
+    const excluded = isPartialCompileExcluded(resourcePath, partialCompileRules, 'page')
+    if (excluded && state.fallbackPages) {
+      const fullName = outputName(packageRoot ? `${packageRoot}/${name}` : name)
+      recordReference(resolved.request, { name: fullName, type: 'page', packageRoot })
+      if (!state.fallbackPages.has(packageRoot)) state.fallbackPages.set(packageRoot, { name, request: resolved.request })
+      return null
+    }
+    const sourceRequest = excluded ? defaultPage : resolved.request
     const result = await register(sourceRequest, 'page', name, packageRoot, state, resolved.request)
     if (route) pageRoutes.set(route, result.name)
     return packageRoot ? result.name.slice(packageRoot.length + 1) : result.name
@@ -337,7 +349,7 @@ async function discoverEntries (rootEntries, options = {}) {
     let component = shared
 
     if (!component) {
-      const source = !options.production && isPartialCompileExcluded(resourcePath, options.partialCompileRules, 'component') ? defaultComponent : addQuery(resolved.request, {}, false, ['root'])
+      const source = isPartialCompileExcluded(resourcePath, partialCompileRules, 'component') ? defaultComponent : addQuery(resolved.request, {}, false, ['root'])
       const { descriptionFileData, descriptionFileRoot } = resolved.info || {}
       const nativePackage = miniProgram && /\.[cm]?[jt]s$/.test(resourcePath) && resourcePath.split(path.sep).includes('node_modules') && descriptionFileRoot
       const name = nameOverride || (nativePackage
@@ -471,11 +483,19 @@ async function discoverEntries (rootEntries, options = {}) {
 
   async function processApp (entry, context, state) {
     const json = entry.json
+    if (miniProgram && partialCompileRules) state.fallbackPages = new Map()
     await rewriteMap(json.usingComponents, (request, tag) => addComponent(request, context, entry, state, tag))
     const pages = []
     await addPages(json.pages, context, pages, '', state)
     await addPackages(json.packages, context, state, pages)
     for (const subpackage of json.subPackages || json.subpackages || []) await addSubpackage(subpackage, context, state)
+    for (const [root, { name, request }] of state.fallbackPages || []) {
+      const target = root ? state.subpackages.get(root).pages : pages
+      if (!target.length) {
+        const page = await register(defaultPage, 'page', name, root, state, request)
+        target.push(root ? page.name.slice(root.length + 1) : page.name)
+      }
+    }
     delete json.packages
     delete json.subpackages
     delete json.subPackages
@@ -517,7 +537,8 @@ async function discoverEntries (rootEntries, options = {}) {
   function findEntry (request, packageRoot = '', type) {
     const { resourcePath } = parseRequest(request)
     const candidates = (references.get(resourcePath) || []).filter(entry => !type || entry.type === type)
-    return candidates.find(entry => entry.packageRoot === packageRoot) || candidates.find(entry => !entry.packageRoot) || candidates[0]
+    const entry = candidates.find(entry => entry.packageRoot === packageRoot) || candidates.find(entry => !entry.packageRoot) || candidates[0]
+    return entry && (entries.get(entry.name) || entry)
   }
 
   function getPageOutputPath (request, name) {

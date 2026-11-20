@@ -56,6 +56,8 @@ export default defineConfig({
 
 小程序生产构建默认启用压缩，可以通过 Rsbuild 的 `output.minify` 调整。普通 `import()` 仍返回 Promise，其模块随调用方打包。需要生成平台异步分包时，使用 [Mpx 异步分包](../guide/advance/async-subpackage.md) 的 `require.async`。
 
+小程序配置 `partialCompileRules.pages` 后，路由清单只注册命中规则的页面。主包或某个分包完全没有命中页面时，保留一个兜底页。部分编译适用于本地调试，包括使用生产压缩的 `build --watch`。发布构建请提供全量入口配置。
+
 旧项目可以继续使用原有的 Webpack 配置。迁入 Rsbuild 时，使用 `srcModeRules` 指定源码方言，用 `checkUsingComponentsRules` 配置组件检查，并用 `partialCompileRules.pages` 和 `partialCompileRules.components` 分别配置部分编译范围。
 
 ## 类型定义 {#type-definition}
