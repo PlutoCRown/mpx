@@ -26,3 +26,7 @@ it('emits a runnable mini-program with SFC, inline WXS, and native async JS', as
 it('updates the output on page edits and clears removed page files in watch mode', async () => {
   await run(process.execPath, [runner, fixture, workDir, 'watch'])
 }, 20000)
+
+it('updates production watch artifacts and keeps dependencies on reused modules', async () => {
+  await run(process.execPath, [runner, fixture, workDir, 'watch-production'])
+}, 20000)

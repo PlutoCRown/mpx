@@ -7,6 +7,7 @@ const processDefs = require('@mpxjs/webpack-plugin/lib/utils/process-defs')
 const addQuery = require('@mpxjs/webpack-plugin/lib/utils/add-query')
 const parseRequest = require('@mpxjs/webpack-plugin/lib/utils/parse-request')
 const { discoverEntries } = require('./entries')
+const { createWatchCache, addDependencies } = require('./watch-cache')
 
 const pluginName = 'MpxMiniProgram'
 const nativeRequireAsync = '__MPX_NATIVE_REQUIRE_ASYNC__'
@@ -65,14 +66,19 @@ function createBuildState (graph, options) {
   const { mode, projectRoot, pathHashMode, customComponentModuleId } = options
   const asyncPaths = new Map()
   const asyncEntries = new Map()
-  const asyncRequest = (context, request, { packageRoot }) => {
+  const registerAsyncEntry = ({ marker, target, name, request, packageRoot }) => {
+    asyncPaths.set(marker, target)
+    asyncEntries.set(name, { request, packageRoot })
+  }
+  const asyncRequest = (context, request, { packageRoot }, resolver = graph, entries) => {
     if (!packageRoot || !['wx', 'ali', 'tt'].includes(mode) || options.disableRequireAsync) return
-    const resolved = graph.resolveSync(context, request)
+    const resolved = resolver.resolveSync(context, request)
     const name = `${packageRoot}/mpx-async/${hash(resolved)}`
     const target = name + '.js'
     const marker = `__MPX_ASYNC_${hash(target)}__`
-    asyncPaths.set(marker, target)
-    asyncEntries.set(name, { request: addQuery(resolved, { mpxPackage: packageRoot }), packageRoot })
+    const entry = { marker, target, name, request: addQuery(resolved, { mpxPackage: packageRoot }), packageRoot }
+    registerAsyncEntry(entry)
+    entries?.push(entry)
     return `${nativeRequireAsync}(${JSON.stringify(marker)})`
   }
 
@@ -82,6 +88,7 @@ function createBuildState (graph, options) {
     asyncPaths,
     asyncEntries,
     asyncRequest,
+    registerAsyncEntry,
     assetsSources: new Map(),
     defs: processDefs(options.defs),
     wxsContentMap: {},
@@ -137,6 +144,7 @@ class MiniProgramPlugin {
     const options = this.options
     const rspack = compiler.rspack
     const platform = config[options.mode]
+    let previous
     compiler.hooks.beforeCompile.tapPromise(pluginName, async () => {
       const graph = await discoverEntries(this.rootEntries, Object.assign({}, options, {
         context: compiler.context,
@@ -147,6 +155,24 @@ class MiniProgramPlugin {
         })
       }))
       this.build = createBuildState(graph, options)
+      if (compiler.watchMode) this.build.cache = createWatchCache(compiler, previous)
+    })
+    compiler.hooks.afterCompile.tap(pluginName, compilation => {
+      // Loaders also resolve resources after thisCompilation, including missing platform files.
+      addDependencies(compilation, this.build.graph)
+    })
+    compiler.hooks.done.tap(pluginName, stats => {
+      const cache = this.build.cache
+      if (!cache || stats.hasErrors()) {
+        previous = undefined
+        return
+      }
+      previous = {
+        records: cache.records,
+        files: new Set(stats.compilation.fileDependencies),
+        missing: new Set(stats.compilation.missingDependencies),
+        buildDependencies: new Set(stats.compilation.buildDependencies)
+      }
     })
 
     compiler.hooks.thisCompilation.tap(pluginName, (compilation) => {
@@ -161,9 +187,6 @@ class MiniProgramPlugin {
         assetsSources: current.assetsSources
       }
       current.buildInfo = compilation.mpxBuildInfo
-      graph.fileDependencies.forEach(file => compilation.fileDependencies.add(file))
-      graph.contextDependencies.forEach(dir => compilation.contextDependencies.add(dir))
-      graph.missingDependencies.forEach(file => compilation.missingDependencies.add(file))
       graph.warnings.forEach(warning => compilation.warnings.push(warning))
       rspack.NormalModule.getCompilationHooks(compilation).loader.tap(pluginName, (loader) => {
         loader.mpxBuild = current

@@ -69,9 +69,9 @@ function createResolver (options, dependencies) {
     if (native) return urlToRequest(request)
     return request.startsWith('~') ? request.slice(1) : request
   }
-  const resolveWithInfo = (context, request, { native = false, optional = false, tracked = true, dependencyType } = {}) => new Promise((resolve, reject) => {
+  const resolveWithInfo = (context, request, { native = false, optional = false, tracked = true, dependencyType, dependencies: scope = dependencies } = {}) => new Promise((resolve, reject) => {
     const { queryObj } = parseRequest(request)
-    getResolver(dependencyType).resolve({}, queryObj.context || context, prepare(request, native), tracked ? dependencies : {}, (error, resource, info) => {
+    getResolver(dependencyType).resolve({}, queryObj.context || context, prepare(request, native), tracked ? scope : {}, (error, resource, info) => {
       if (error && !(optional && isMissing(error))) return reject(error)
       resolve(resource ? { request: resource, info } : null)
     })
@@ -83,11 +83,11 @@ function createResolver (options, dependencies) {
       const result = await resolveWithInfo(context, request, flags)
       return result && result.request
     },
-    resolveSync (context, request, { native = false, optional = false, tracked = true, dependencyType } = {}) {
+    resolveSync (context, request, { native = false, optional = false, tracked = true, dependencyType, dependencies: scope = dependencies } = {}) {
       const { queryObj } = parseRequest(request)
       let result
       let error
-      getResolver(dependencyType).resolve({}, queryObj.context || context, prepare(request, native), tracked ? dependencies : {}, (err, resource) => {
+      getResolver(dependencyType).resolve({}, queryObj.context || context, prepare(request, native), tracked ? scope : {}, (err, resource) => {
         error = err
         result = resource
       })
@@ -545,7 +545,14 @@ async function discoverEntries (rootEntries, options = {}) {
     return pageRoutes.get(`${parseRequest(request).resourcePath}\0${outputName(name)}`) || name
   }
 
-  return { entries, assets, warnings, independentPackages, fileDependencies, contextDependencies, missingDependencies, resolve, resolveSync, readFile, findEntry, getOutputPath, getPageOutputPath }
+  function withDependencies (dependencies) {
+    return Object.assign({}, this, {
+      resolve: (context, request, options) => resolve(context, request, Object.assign({}, options, { dependencies })),
+      resolveSync: (context, request, options) => resolveSync(context, request, Object.assign({}, options, { dependencies }))
+    })
+  }
+
+  return { entries, assets, warnings, independentPackages, fileDependencies, contextDependencies, missingDependencies, resolve, resolveSync, readFile, findEntry, getOutputPath, getPageOutputPath, withDependencies }
 }
 
 module.exports = { discoverEntries }

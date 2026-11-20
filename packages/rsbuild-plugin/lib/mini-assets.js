@@ -47,6 +47,24 @@ function renderStylus (stylus, content, resourcePath, graph, addDependency) {
   }
 }
 
+function getUsingComponentsInfo (entry, build) {
+  const info = {}
+  for (const [name, request] of Object.entries(entry.json?.usingComponents || {})) {
+    if (typeof request !== 'string') continue
+    const target = request.startsWith('/')
+      ? request.slice(1)
+      : path.posix.normalize(path.posix.join(path.posix.dirname(entry.name), request))
+    const related = build.graph.entries.get(target)
+    if (related) {
+      info[name] = {
+        mid: build.getModuleId(related.resourcePath, false),
+        hasVirtualHost: matchCondition(related.resourcePath, build.options.autoVirtualHostRules)
+      }
+    }
+  }
+  return info
+}
+
 class MiniAssets {
   constructor (loader, entry) {
     this.loader = loader
@@ -85,22 +103,7 @@ class MiniAssets {
     const moduleId = context.getModuleId(entry.resourcePath, entry.type === 'app')
     const native = !/\.(?:mpx|vue)$/.test(entry.resourcePath) || include
     const normalized = entry.sourceJSON || {}
-    const components = Object.assign({}, entry.json?.usingComponents)
-    const usingComponentsInfo = {}
-    Object.keys(components).forEach((name) => {
-      const request = components[name]
-      if (typeof request !== 'string') return
-      const target = request.startsWith('/')
-        ? request.slice(1)
-        : path.posix.normalize(path.posix.join(path.posix.dirname(entry.name), request))
-      const related = graph.entries.get(target)
-      if (related) {
-        usingComponentsInfo[name] = {
-          mid: context.getModuleId(related.resourcePath, false),
-          hasVirtualHost: matchCondition(related.resourcePath, context.autoVirtualHostRules)
-        }
-      }
-    })
+    const usingComponentsInfo = this.usingComponentsInfo || (this.usingComponentsInfo = getUsingComponentsInfo(entry, this.build))
     const facade = Object.create(loader)
     facade.getMpx = () => context
     facade.resource = addQuery(resourcePath, {
@@ -292,3 +295,4 @@ class MiniAssets {
 }
 
 module.exports = MiniAssets
+module.exports.getUsingComponentsInfo = getUsingComponentsInfo
